@@ -26,17 +26,17 @@ Rabbit::Rabbit()
 	{
 		int randomNumber = distribute(generator) % 256;
 		Color.push_back(randomNumber);
-		colorInfo.append(i > 0 ? "," + std::to_string(randomNumber) : std::to_string(randomNumber) );
+		colorInfo.append(i > 0 ? "," + std::to_string(randomNumber) : std::to_string(randomNumber));
 	}
 
 	// gender based name color 
 	HANDLE  hConsole{};
-	int k = bIsMale ? 3 :  5;
+	int k = bIsMale ? 3 : 5;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, k);
-	std::cout << Name; 
+	std::cout << Name;
 	// green color for birth + yellow for radioactive
-	k = bIsRadioactive ? 6 :  2;
+	k = bIsRadioactive ? 6 : 2;
 	SetConsoleTextAttribute(hConsole, k);
 
 	std::cout << " Was Born with Color of " + colorInfo;
@@ -45,7 +45,7 @@ Rabbit::Rabbit()
 }
 
 
-Rabbit::Rabbit(std::string FatherName,std::vector<int> InColor)
+Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor)
 {
 
 	std::random_device os_seed;
@@ -101,13 +101,43 @@ void Rabbit::Die()
 	int k = 4;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, k);
+	std::cout << "\n";
 	std::cout << Name + " Died :( ";
+	std::cout << "\n";
+
+
 }
 
-void Rabbit::TurnRadioActive()
+void Rabbit::TurnRadioActive(bool ByBirth)
 {
+
+
+	if (!ByBirth) {
+		HANDLE  hConsole{};
+		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		std::cout << "\n";
+		int k = bIsMale ? 3 : 5;
+		SetConsoleTextAttribute(hConsole, k);
+		std::cout << Name;
+
+		 k =  4;
+		SetConsoleTextAttribute(hConsole, k);
+		std::cout << " .::. ";
+
+		k = 6;
+		SetConsoleTextAttribute(hConsole, k);
+
+		std::cout << " Was bitten and turned radioactive";
+		std::cout << "\n";
+
+	}
 	bIsRadioactive = true;
 	AgeLimit = 50;
+}
+
+bool Rabbit::GetRadioactive()
+{
+	return bIsRadioactive;
 }
 
 

@@ -8,17 +8,20 @@
 #include "Rabbit.h"
 
 
-struct Info {
-	int Age;
-};
 
+
+enum RatioType
+{
+	Radioactivity,
+	Age,
+};
 
 std::vector<Rabbit> Rabbits;
 
 void InitWorld()
 {
 	std::cout << "\n";
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		Rabbit x;
 		Rabbits.push_back(x);
@@ -31,6 +34,44 @@ int GetFirstMaleInList()
 	{
 
 		if (Rabbits[i].GetIsMale())
+			return i;
+
+		// return Rabbits[i] and check for if it's valid 
+
+	}
+
+	return -1;
+}
+
+
+int Average(RatioType InRatioType)
+{
+	int total = 0;
+	for (int i = 0; i < Rabbits.size(); i++)
+	{
+		switch (InRatioType)
+		{
+		case Radioactivity:
+			total += (Rabbits[i].GetRadioactive() ? 1 : 0) * 100;
+			break;
+		case Age:
+			total += Rabbits[i].GetAge();
+			break;
+		default:
+			break;
+		}
+	}
+
+
+	return total / Rabbits.size();
+}
+
+int GetFirstNonRadioActive()
+{
+	for (int i = 0; i < Rabbits.size(); i++)
+	{
+
+		if (!Rabbits[i].GetRadioactive())
 			return i;
 
 		// return Rabbits[i] and check for if it's valid 
@@ -55,21 +96,64 @@ int main()
 
 	while (bEcosystemAlive)//ecosystemAlive)
 	{
+
+		// age up rabbits , remove them if dead
+		for (int i = 0; i < Rabbits.size(); i++) {
+			if (Rabbits[i].AgeUp())
+				Rabbits.erase(Rabbits.begin() + i);
+		}
+
+
+		std::vector<int> infectors;
+		for (int i = 0; i < Rabbits.size(); i++) {
+
+			if (Rabbits[i].GetRadioactive())
+			{
+				infectors.push_back(i);
+
+			}
+		}
+		for (int i = 0; i < infectors.size(); i++)
+		{
+			if (GetFirstNonRadioActive() > -1)
+				Rabbits[GetFirstNonRadioActive()].TurnRadioActive(false);
+		}
+		infectors.clear();
+
+		// mate
 		for (int i = 0; i < Rabbits.size(); i++)
 		{
 			if (!Rabbits[i].GetIsMale())
 				if (Rabbits[i].EligibleForBreeding()) {
-					if(GetFirstMaleInList() > -1)
-					Rabbit x(Rabbits[GetFirstMaleInList()].GetLastName(), Rabbits[i].GetColor());
+					if (GetFirstMaleInList() > -1) {
+						Rabbit x(Rabbits[GetFirstMaleInList()].GetLastName(), Rabbits[i].GetColor());
+						Rabbits.push_back(x);
+					}
 				}
 
 		}
 
-		for (int i = 0; i < Rabbits.size(); i++)
-			if(Rabbits[i].AgeUp())
-				Rabbits.erase(Rabbits.begin() + i);
 
-		
+
+
+
+		if (Rabbits.size() == 0) {
+			bEcosystemAlive = false;
+		}
+		else
+		{
+			std::cout << "cycle passed ";
+			std::cout << "\n";
+
+			std::cout << "Total Rabbit Population: " + std::to_string(Rabbits.size());
+			std::cout << "\n";
+
+			std::cout << "With Average age of: " + std::to_string(Average(RatioType::Age));
+			std::cout << "\n";
+
+			std::cout << std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive";
+			std::cout << "\n";
+		}
 
 
 		//Rabbit z(x.GetLastName(), y.GetColor());
@@ -87,12 +171,11 @@ int main()
 			std::cin >> tempVariableToMakeTheLoopWait;
 		}
 
-		std::cout << "cycle passed ";
-		std::cout << "\n";
 
 
 	}
 
+	std::cout << "World Ended!";
 
 
 	return 0;

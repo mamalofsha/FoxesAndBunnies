@@ -35,7 +35,6 @@ bool Animal::OverAgeLimit()
 		Die();
 		return true;
 	}
-	std::cout << Age;
 
 	return false;
 }

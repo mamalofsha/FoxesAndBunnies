@@ -40,7 +40,9 @@ public:
 	std::vector<int> GetColor();
 	std::string GetLastName();
 
-	void TurnRadioActive();
+	bool GetRadioactive();
+
+	void TurnRadioActive(bool ByBirth = true);
 
 };
 
