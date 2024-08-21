@@ -3,6 +3,9 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <cstdlib> 
+#include "NameStorage.h"
+#include "Rabbit.h"
 
 
 struct Info {
@@ -12,10 +15,12 @@ struct Info {
 
 int main()
 {
+
 	std::string myString = "Hello, world!";
 	std::cout << myString;
 	std::cout << "\n";
 	std::cout << myString.length();
+
 
 	
 	std::vector<int> myList = { 2, 3 };
@@ -32,10 +37,15 @@ int main()
 
 	while (true)//ecosystemAlive)
 	{
+		std::cout << "\n";
+		Rabbit x;
 
+		Rabbit y;
+		Rabbit z(y.GetColor());
+		//std::cout << NameStorage::RandomName();
 
 		// input break
-		char tempVariableToMakeTheLoopWait = '';
+		char tempVariableToMakeTheLoopWait = ' ';
 		std::cin >> tempVariableToMakeTheLoopWait;
 
 		// automatic wait
