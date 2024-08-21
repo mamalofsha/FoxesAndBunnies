@@ -15,18 +15,24 @@ class Animal
 
 private : 
 
-	int Age;
-	int AgeLimit;
-	bool bIsMale;
+	int Age = 0;
+
 
 protected:
 
-	bool EligibleForBreeding();
-	void AgeUp();
+	int AgeLimit;
+	bool bIsMale;
+
+	virtual bool EligibleForBreeding() ;
+
+	virtual void Die();
+	bool OverAgeLimit();
 
 public:
 	
-
+	bool AgeUp();
+	int GetAge();
+	bool GetIsMale();
 
 
 };

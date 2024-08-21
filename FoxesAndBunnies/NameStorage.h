@@ -14,12 +14,14 @@ class NameStorage
 {
 private :
 
-	static std::vector<std::string> FirstNames;
+	static std::vector<std::string> MaleFirstNames;
+	static std::vector<std::string> FemaleFirstNames;
 	static std::vector<std::string> LastNames;
 
 public:
 	
-	static std::string RandomName();
+	static std::string RandomFullName(bool IsMale);
+	static std::string RandomFirstName(bool IsMale);
 
 };
 

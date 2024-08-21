@@ -11,7 +11,16 @@ Rabbit::Rabbit()
 	engine generator(seed);
 	std::uniform_int_distribution< u32 > distribute(0, 9999);
 
+	// gender randomizer 
+	bIsMale = distribute(generator) % 10 > 4;
+	Name = NameStorage::RandomFullName(bIsMale);
+	AgeLimit = 10;
 
+	// 2% chance for radio activity
+	if (distribute(generator) % 100 > 97)
+		TurnRadioActive();
+
+	// colo randomizer + info for printing 
 	std::string colorInfo;
 	for (int i = 0; i < 3; i++)
 	{
@@ -20,43 +29,90 @@ Rabbit::Rabbit()
 		colorInfo.append(i > 0 ? "," + std::to_string(randomNumber) : std::to_string(randomNumber) );
 	}
 
-
-	Name = NameStorage::RandomName();
-
+	// gender based name color 
 	HANDLE  hConsole{};
-	int k =2 ;
-	SetConsoleTextAttribute(hConsole, k);
-
+	int k = bIsMale ? 3 :  5;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, k);
+	std::cout << Name; 
+	// green color for birth + yellow for radioactive
+	k = bIsRadioactive ? 6 :  2;
+	SetConsoleTextAttribute(hConsole, k);
 
-	std::cout << Name + " Was Born with Color of " + colorInfo;
+	std::cout << " Was Born with Color of " + colorInfo;
 	std::cout << "\n";
 
 }
 
 
-Rabbit::Rabbit(std::vector<int> InColor)
+Rabbit::Rabbit(std::string FatherName,std::vector<int> InColor)
 {
-	Name = NameStorage::RandomName();
 
+	std::random_device os_seed;
+	const u32 seed = os_seed();
+
+	engine generator(seed);
+	std::uniform_int_distribution< u32 > distribute(0, 9999);
+
+	// gender randomizer 
+	bIsMale = distribute(generator) % 10 > 4;
+	AgeLimit = 10;
+
+	// 2% chance for radio activity
+
+	if (distribute(generator) % 100 > 97)
+		TurnRadioActive();
+	// get new name and have father's last name
+	Name = NameStorage::RandomFirstName(bIsMale) + " " + FatherName;
+
+	// mom's color  +  info for printing 
 	Color = InColor;
 	std::string colorInfo;
 	for (int i = 0; i < 3; i++)
 	{
 		colorInfo.append(i > 0 ? "," + std::to_string(Color[i]) : std::to_string(Color[i]));
 	}
+	HANDLE  hConsole{};
+	int k = bIsMale ? 3 : 5;
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, k);
+	std::cout << Name;
+	// green color for birth + yellow for radioactive
+	k = bIsRadioactive ? 6 : 2;
+	SetConsoleTextAttribute(hConsole, k);
 
-	std::cout << Name + " Was Born with Color of " + colorInfo;
+	std::cout << " Was Born with Color of " + colorInfo;
 	std::cout << "\n";
 
 }
 bool Rabbit::EligibleForBreeding()
 {
-	return false;
+	return GetAge() > 1 && !bIsRadioactive;
 }
 
 std::vector<int> Rabbit::GetColor()
 {
 	return Color;
+}
+
+void Rabbit::Die()
+{
+	HANDLE  hConsole{};
+	int k = 4;
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, k);
+	std::cout << Name + " Died :( ";
+}
+
+void Rabbit::TurnRadioActive()
+{
+	bIsRadioactive = true;
+	AgeLimit = 50;
+}
+
+
+std::string Rabbit::GetLastName()
+{
+	std::string delimiter = " ";
+	return Name.substr(Name.find(delimiter) + 1, Name.size() - Name.find(delimiter));
 }

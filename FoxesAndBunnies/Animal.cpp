@@ -12,10 +12,35 @@ bool Animal::EligibleForBreeding()
 	return false;
 }
 
-void Animal::AgeUp()
+bool Animal::AgeUp()
 {
-	if (++Age> AgeLimit)
-		// die
+	++Age;
+	
+	return OverAgeLimit();
+}
 
-		return;
+int Animal::GetAge()
+{
+	return Age;
+}
+
+bool Animal::GetIsMale()
+{
+	return bIsMale;
+}
+
+bool Animal::OverAgeLimit()
+{
+	if (Age > AgeLimit) {
+		Die();
+		return true;
+	}
+	std::cout << Age;
+
+	return false;
+}
+
+void Animal::Die()
+{
+	
 }
