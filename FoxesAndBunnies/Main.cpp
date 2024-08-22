@@ -20,7 +20,7 @@ std::vector<Rabbit> Rabbits;
 
 void InitWorld()
 {
-	std::cout << "\n";
+	std::cout << std::endl;
 	for (int i = 0; i < 5; i++)
 	{
 		Rabbit x;
@@ -142,17 +142,18 @@ int main()
 		}
 		else
 		{
-			std::cout << "cycle passed ";
-			std::cout << "\n";
+			HANDLE  hConsole{};
+			int k = 15;
+			hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsole, k);
 
-			std::cout << "Total Rabbit Population: " + std::to_string(Rabbits.size());
-			std::cout << "\n";
+			std::cout << "cycle passed " << std::endl;
 
-			std::cout << "With Average age of: " + std::to_string(Average(RatioType::Age));
-			std::cout << "\n";
+			std::cout << "Total Rabbit Population: " + std::to_string(Rabbits.size()) << std::endl;
 
-			std::cout << std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive";
-			std::cout << "\n";
+			std::cout << "With Average age of: " + std::to_string(Average(RatioType::Age)) << std::endl;
+
+			std::cout << std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive" << std::endl;
 		}
 
 

@@ -38,9 +38,7 @@ Rabbit::Rabbit()
 	// green color for birth + yellow for radioactive
 	k = bIsRadioactive ? 6 : 2;
 	SetConsoleTextAttribute(hConsole, k);
-
-	std::cout << " Was Born with Color of " + colorInfo;
-	std::cout << "\n";
+	std::cout << " Was Born with Color of " + colorInfo << std::endl;
 
 }
 
@@ -81,8 +79,7 @@ Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor)
 	k = bIsRadioactive ? 6 : 2;
 	SetConsoleTextAttribute(hConsole, k);
 
-	std::cout << " Was Born with Color of " + colorInfo;
-	std::cout << "\n";
+	std::cout << " Was Born with Color of " + colorInfo << std::endl;
 
 }
 bool Rabbit::EligibleForBreeding()
@@ -101,9 +98,7 @@ void Rabbit::Die()
 	int k = 4;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, k);
-	std::cout << "\n";
-	std::cout << Name + " Died :( ";
-	std::cout << "\n";
+	std::cout << Name + " Died :( " << std::endl;
 
 
 }
@@ -115,7 +110,7 @@ void Rabbit::TurnRadioActive(bool ByBirth)
 	if (!ByBirth) {
 		HANDLE  hConsole{};
 		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-		std::cout << "\n";
+		std::cout << std::endl;
 		int k = bIsMale ? 3 : 5;
 		SetConsoleTextAttribute(hConsole, k);
 		std::cout << Name;
@@ -127,8 +122,7 @@ void Rabbit::TurnRadioActive(bool ByBirth)
 		k = 6;
 		SetConsoleTextAttribute(hConsole, k);
 
-		std::cout << " Was bitten and turned radioactive";
-		std::cout << "\n";
+		std::cout << " Was bitten and turned radioactive" << std::endl;
 
 	}
 	bIsRadioactive = true;
