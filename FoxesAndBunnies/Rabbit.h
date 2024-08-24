@@ -38,6 +38,8 @@ public:
 	virtual bool EligibleForBreeding() override;
 
 	std::vector<int> GetColor();
+	std::string GetFirstName();
+
 	std::string GetLastName();
 
 	bool GetRadioactive();

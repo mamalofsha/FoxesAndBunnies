@@ -12,7 +12,7 @@ Rabbit::Rabbit()
 	std::uniform_int_distribution< u32 > distribute(0, 9999);
 
 	// gender randomizer 
-	bIsMale = distribute(generator) % 10 > 4;
+	bIsMale = true;//distribute(generator) % 10 > 4;
 	Name = NameStorage::RandomFullName(bIsMale);
 	AgeLimit = 10;
 
@@ -135,8 +135,18 @@ bool Rabbit::GetRadioactive()
 }
 
 
+std::string Rabbit::GetFirstName()
+{
+	std::string delimiter = " ";
+	return Name.substr(0,Name.find(delimiter));
+}
+
+
 std::string Rabbit::GetLastName()
 {
 	std::string delimiter = " ";
 	return Name.substr(Name.find(delimiter) + 1, Name.size() - Name.find(delimiter));
 }
+
+
+

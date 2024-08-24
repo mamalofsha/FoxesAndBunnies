@@ -85,7 +85,7 @@ int main()
 {
 
 	// init
-	std::cout << "World started!";
+	std::cout << "World started!" << "\b";
 	InitWorld();
 	bool bEcosystemAlive = true;
 
@@ -97,11 +97,13 @@ int main()
 	while (bEcosystemAlive)//ecosystemAlive)
 	{
 
+
 		// age up rabbits , remove them if dead
-		for (int i = 0; i < Rabbits.size(); i++) {
+		for (int i = Rabbits.size() - 1; i >= 0; i--)
 			if (Rabbits[i].AgeUp())
 				Rabbits.erase(Rabbits.begin() + i);
-		}
+
+
 
 
 		std::vector<int> infectors;
@@ -154,6 +156,11 @@ int main()
 			std::cout << "With Average age of: " + std::to_string(Average(RatioType::Age)) << std::endl;
 
 			std::cout << std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive" << std::endl;
+
+			for (int i = 0; i < Rabbits.size(); i++)
+				std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << std::endl;
+
+
 		}
 
 
