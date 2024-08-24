@@ -149,17 +149,18 @@ int main()
 			hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 			SetConsoleTextAttribute(hConsole, k);
 
-			std::cout << "cycle passed " << std::endl;
+			std::cout << "cycle passed " << std::endl << std::endl;
 
 			std::cout << "Total Rabbit Population: " + std::to_string(Rabbits.size()) << std::endl;
 
 			std::cout << "With Average age of: " + std::to_string(Average(RatioType::Age)) << std::endl;
 
-			std::cout << std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive" << std::endl;
+			std::cout << std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive" << std::endl << std::endl;
 
 			for (int i = 0; i < Rabbits.size(); i++)
 				std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << std::endl;
 
+			std::cout << std::endl;
 
 		}
 

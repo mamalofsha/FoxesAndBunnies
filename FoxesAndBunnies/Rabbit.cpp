@@ -12,7 +12,7 @@ Rabbit::Rabbit()
 	std::uniform_int_distribution< u32 > distribute(0, 9999);
 
 	// gender randomizer 
-	bIsMale = true;//distribute(generator) % 10 > 4;
+	bIsMale = distribute(generator) % 10 > 4;
 	Name = NameStorage::RandomFullName(bIsMale);
 	AgeLimit = 10;
 
