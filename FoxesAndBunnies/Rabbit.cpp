@@ -60,6 +60,8 @@ Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor)
 
 	if (distribute(generator) % 100 > 97)
 		TurnRadioActive();
+	 
+	
 	// get new name and have father's last name
 	Name = NameStorage::RandomFirstName(bIsMale) + " " + FatherName;
 

@@ -157,7 +157,21 @@ int main()
 
 			std::cout << std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive" << std::endl << std::endl;
 
-			for (int i = 0; i < Rabbits.size(); i++)
+			if (Rabbits.size() > 1000)
+			{
+				std::cout << "Rabbit overflow , \"snap\" " << std::endl;
+				bool oddDelete = Rabbits.size() % 2 > 0;
+				for (int i = Rabbits.size() - 1; i >= 0; i--)
+				{
+					if (oddDelete && (i % 2 == 1))
+						Rabbits.erase(Rabbits.begin() + i);
+					if (!oddDelete && (i % 2 == 0))
+						Rabbits.erase(Rabbits.begin() + i);
+
+				}
+			}
+
+			for (int i = Rabbits.size() - 1; i >= 0; i--)
 				std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << std::endl;
 
 			std::cout << std::endl;
