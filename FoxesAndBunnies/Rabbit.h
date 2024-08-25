@@ -44,6 +44,9 @@ public:
 
 	bool GetRadioactive();
 
+
+	virtual void Starve() override;
+
 	void TurnRadioActive(bool ByBirth = true);
 
 };

@@ -150,5 +150,16 @@ std::string Rabbit::GetLastName()
 	return Name.substr(Name.find(delimiter) + 1, Name.size() - Name.find(delimiter));
 }
 
+void Rabbit::Starve()
+{
+
+	HANDLE  hConsole{};
+	int k = 4;
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, k);
+	std::cout << Name + " Starved  xP  " << std::endl;
+
+}
+
 
 

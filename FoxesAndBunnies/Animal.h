@@ -33,6 +33,7 @@ public:
 	bool AgeUp();
 	int GetAge();
 	bool GetIsMale();
+	virtual void Starve() {};
 
 
 };

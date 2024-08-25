@@ -94,6 +94,9 @@ int main()
 	std::cin >> InputForCycle;
 	bool AutomaticWait = (InputForCycle == 'y');
 
+	int grassCount = 500;
+	int grassMax = 500;
+
 	while (bEcosystemAlive)//ecosystemAlive)
 	{
 
@@ -121,6 +124,26 @@ int main()
 				Rabbits[GetFirstNonRadioActive()].TurnRadioActive(false);
 		}
 		infectors.clear();
+
+
+
+
+		/// feed 
+		for (int i = Rabbits.size() - 1; i >= 0; i--) {
+
+			int grassCost = Rabbits[i].GetRadioactive() ? 4 : 2;
+
+			if (grassCount > grassCost)
+				grassCount -= grassCost;
+			else {
+				Rabbits[i].Starve();
+				Rabbits.erase(Rabbits.begin() + i);
+
+			}
+
+		}
+
+
 
 		// mate
 		for (int i = 0; i < Rabbits.size(); i++)
@@ -152,6 +175,9 @@ int main()
 			std::cout << "cycle passed " << std::endl << std::endl;
 
 			std::cout << "Total Rabbit Population: " + std::to_string(Rabbits.size()) << std::endl;
+
+			std::cout << "Total Grass Remaining : " + std::to_string(grassCount) << std::endl;
+			grassCount++;
 
 			std::cout << "With Average age of: " + std::to_string(Average(RatioType::Age)) << std::endl;
 
