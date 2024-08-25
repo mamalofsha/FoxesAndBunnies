@@ -151,7 +151,7 @@ int main()
 			if (!Rabbits[i].GetIsMale())
 				if (Rabbits[i].EligibleForBreeding()) {
 					if (GetFirstMaleInList() > -1) {
-						Rabbit x(Rabbits[GetFirstMaleInList()].GetLastName(), Rabbits[i].GetColor());
+						Rabbit x(Rabbits[GetFirstMaleInList()].GetLastName(), Rabbits[i].GetColor(), &Rabbits[i]);
 						Rabbits.push_back(x);
 					}
 				}
@@ -197,9 +197,19 @@ int main()
 				}
 			}
 
-			for (int i = Rabbits.size() - 1; i >= 0; i--)
-				std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << std::endl;
-
+			for (int i = Rabbits.size() - 1; i >= 0; i--) {
+				if (Rabbits[i].GetMom() != nullptr)
+				{
+				//	Animal* tempPtr = dynamic_cast<Rabbit*>(Rabbits[i].GetMom());
+				//	if(tempPtr)
+					Animal tempMom = *Rabbits[i].GetMom();
+					
+					std::cout << (*Rabbits[i].GetMom()).GetAge() << "-----------" << std::endl;
+					//std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << " Child of: " << (dynamic_cast<Rabbit*>(Rabbits[i].GetMom()))->GetFirstName() << "  " << (dynamic_cast<Rabbit*>(Rabbits[i].GetMom()))->GetLastName() << std::endl;
+				}
+				else
+					std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << std::endl;
+			}
 			std::cout << std::endl;
 
 		}

@@ -29,18 +29,24 @@ private :
 protected:
 
 	virtual void Die() override;
+
+	Animal* Mom;
+
+
 public:
 
 	// normal constructor 
 	Rabbit();
 	// constructor for being born with parents 
-	Rabbit(std::string FatherName ,std::vector<int> MomColor);
+	Rabbit(std::string FatherName ,std::vector<int> MomColor, Animal* InMom);
 	virtual bool EligibleForBreeding() override;
 
 	std::vector<int> GetColor();
 	std::string GetFirstName();
 
 	std::string GetLastName();
+
+	Animal* GetMom();
 
 	bool GetRadioactive();
 

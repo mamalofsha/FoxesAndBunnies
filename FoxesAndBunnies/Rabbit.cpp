@@ -43,9 +43,10 @@ Rabbit::Rabbit()
 }
 
 
-Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor)
+Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor ,Animal* InMom)
 {
 
+	Mom = InMom;
 	std::random_device os_seed;
 	const u32 seed = os_seed();
 
@@ -159,6 +160,11 @@ void Rabbit::Starve()
 	SetConsoleTextAttribute(hConsole, k);
 	std::cout << Name + " Starved  xP  " << std::endl;
 
+}
+
+Animal* Rabbit::GetMom()
+{
+	return Mom;
 }
 
 
