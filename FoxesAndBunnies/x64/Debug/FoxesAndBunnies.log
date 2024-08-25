@@ -1,2 +1,7 @@
 ﻿  Main.cpp
+G:\FoxesAndbunniesEcosystem\FoxesAndBunnies\FoxesAndBunnies\Main.cpp(66,15): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+G:\FoxesAndbunniesEcosystem\FoxesAndBunnies\FoxesAndBunnies\Main.cpp(105,14): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+G:\FoxesAndbunniesEcosystem\FoxesAndBunnies\FoxesAndBunnies\Main.cpp(132,14): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+G:\FoxesAndbunniesEcosystem\FoxesAndBunnies\FoxesAndBunnies\Main.cpp(190,16): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+G:\FoxesAndbunniesEcosystem\FoxesAndBunnies\FoxesAndBunnies\Main.cpp(200,15): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   FoxesAndBunnies.vcxproj -> G:\FoxesAndbunniesEcosystem\FoxesAndBunnies\x64\Debug\FoxesAndBunnies.exe
