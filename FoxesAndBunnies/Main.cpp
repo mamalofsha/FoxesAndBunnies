@@ -16,26 +16,25 @@ enum RatioType
 	Age,
 };
 
-std::vector<Rabbit> Rabbits;
 
-void InitWorld()
+void InitWorld(std::vector<Rabbit>& InArray)
 {
 	std::cout << std::endl;
 	for (int i = 0; i < 5; i++)
 	{
 		Rabbit x;
-		Rabbits.push_back(x);
+		InArray.push_back(x);
 	}
 }
 
-Rabbit* GetFirstMaleInList()
+Rabbit* GetFirstMaleInList(std::vector<Rabbit>& InArray)
 {
 
-	for (int i = 0; i < Rabbits.size(); i++)
+	for (int i = 0; i < InArray.size(); i++)
 	{
 
-		if (Rabbits[i].GetIsMale())
-			return &Rabbits[i];
+		if (InArray[i].GetIsMale())
+			return &InArray[i];
 
 		// return Rabbits[i] and check for if it's valid 
 
@@ -45,18 +44,18 @@ Rabbit* GetFirstMaleInList()
 }
 
 
-int Average(RatioType InRatioType)
+int Average(RatioType InRatioType, std::vector<Rabbit>& InArray)
 {
 	int total = 0;
-	for (int i = 0; i < Rabbits.size(); i++)
+	for (int i = 0; i < InArray.size(); i++)
 	{
 		switch (InRatioType)
 		{
 		case Radioactivity:
-			total += (Rabbits[i].GetRadioactive() ? 1 : 0) * 100;
+			total += (InArray[i].GetRadioactive() ? 1 : 0) * 100;
 			break;
 		case Age:
-			total += Rabbits[i].GetAge();
+			total += InArray[i].GetAge();
 			break;
 		default:
 			break;
@@ -64,15 +63,15 @@ int Average(RatioType InRatioType)
 	}
 
 
-	return total / Rabbits.size();
+	return total / InArray.size();
 }
 
-int GetFirstNonRadioActive()
+int GetFirstNonRadioActive(std::vector<Rabbit>& InArray)
 {
-	for (int i = 0; i < Rabbits.size(); i++)
+	for (int i = 0; i < InArray.size(); i++)
 	{
 
-		if (!Rabbits[i].GetRadioactive())
+		if (!InArray[i].GetRadioactive())
 			return i;
 
 		// return Rabbits[i] and check for if it's valid 
@@ -84,10 +83,11 @@ int GetFirstNonRadioActive()
 
 int main()
 {
-
+	std::vector<Rabbit> Rabbits;
+	std::vector<Rabbit>* RabbitsPTR = &Rabbits;
 	// init
 	std::cout << "World started!" << "\b";
-	InitWorld();
+	InitWorld(Rabbits);
 	bool bEcosystemAlive = true;
 
 	std::cout << "Automatic Cycle ? ";
@@ -123,8 +123,8 @@ int main()
 		}
 		for (int i = 0; i < infectors.size(); i++)
 		{
-			if (GetFirstNonRadioActive() > -1)
-				Rabbits[GetFirstNonRadioActive()].TurnRadioActive(false);
+			if (GetFirstNonRadioActive(Rabbits) > -1)
+				Rabbits[GetFirstNonRadioActive(Rabbits)].TurnRadioActive(false);
 		}
 		infectors.clear();
 
@@ -153,8 +153,8 @@ int main()
 		{
 			if (!Rabbits[i].GetIsMale())
 				if (Rabbits[i].EligibleForBreeding()) {
-					if (GetFirstMaleInList()) {
-						Rabbit x(GetFirstMaleInList()->GetLastName(), Rabbits[i].GetColor(),i);
+					if (GetFirstMaleInList(Rabbits)) {
+						Rabbit x(GetFirstMaleInList(Rabbits)->GetLastName(), Rabbits[i].GetColor(),i , Rabbits[i]);
 						Rabbits.push_back(x);
 					}
 				}
@@ -182,9 +182,9 @@ int main()
 			std::cout << "Total Grass Remaining : " + std::to_string(grassCount) << std::endl;
 			grassCount++;
 
-			std::cout << "With Average age of: " + std::to_string(Average(RatioType::Age)) << std::endl;
+			std::cout << "With Average age of: " + std::to_string(Average(RatioType::Age,Rabbits)) << std::endl;
 
-			std::cout << std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive" << std::endl << std::endl;
+			std::cout << std::to_string(Average(RatioType::Radioactivity, Rabbits)) + "% Radioactive" << std::endl << std::endl;
 
 			if (Rabbits.size() > 1000)
 			{
@@ -208,6 +208,7 @@ int main()
 					if (Rabbits[i].GetMomIndex() > -1)
 					{
 						int index = Rabbits[i].GetMomIndex();
+						std::cout << Rabbits[i].GetMomPTR()->GetAge()<< "-.-";
 						std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << " Child of: " << Rabbits[index].GetFirstName() << "  " << Rabbits[index].GetLastName() <<"-----------" << Rabbits[index].GetAge() << std::endl;
 					}
 					else

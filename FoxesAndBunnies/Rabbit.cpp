@@ -42,9 +42,9 @@ Rabbit::Rabbit()
 }
 
 
-Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor ,   int InMomIndex)
+Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor ,   int InMomIndex, Rabbit& Animalptr)
 {
-
+	Mom = &Animalptr;
 	MomIndex = InMomIndex;
 	
 	std::random_device os_seed;
@@ -162,6 +162,11 @@ void Rabbit::Starve()
 
 }
 
+Animal* Rabbit::GetMomPTR()
+{
+	return Mom;
+}
+
 int Rabbit::GetMomIndex()
 {
 	return MomIndex;
@@ -170,6 +175,7 @@ int Rabbit::GetMomIndex()
 void Rabbit::ShiftIndex(int InErased)
 {
 	MomIndex -= InErased;
+	//--Mom;
 }
 
 
