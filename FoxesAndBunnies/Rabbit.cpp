@@ -106,19 +106,28 @@ void Rabbit::Die()
 
 }
 
+enum class ExampleColor : uint8_t
+{
+	Red = FOREGROUND_RED
+};
+
 void Rabbit::TurnRadioActive(bool ByBirth)
 {
-
+	// Nikola: Avoid mixing code with different goals
+	// e.g. UI and gameplay should be separate
+	// Option 1: Move the UI / logging code to a separate function
+	// Option 2: Use events/delegates, which is much more difficult to do right now, so let's leave for the future
 
 	if (!ByBirth) {
 		HANDLE  hConsole{};
 		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 		std::cout << std::endl;
-		int k = bIsMale ? 3 : 5;
+		// Nikola: Don't use magic numbers
+		int k = bIsMale ? (FOREGROUND_BLUE | FOREGROUND_GREEN) : 5;
 		SetConsoleTextAttribute(hConsole, k);
 		std::cout << Name;
 
-		 k =  4;
+		k = static_cast<int>(ExampleColor::Red);
 		SetConsoleTextAttribute(hConsole, k);
 		std::cout << " .::. ";
 

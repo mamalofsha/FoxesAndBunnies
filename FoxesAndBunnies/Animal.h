@@ -4,7 +4,7 @@
 #include <iostream>
 #include <windows.h> 
 
-
+// Nikola: Cleanup empty lines
 
 
 

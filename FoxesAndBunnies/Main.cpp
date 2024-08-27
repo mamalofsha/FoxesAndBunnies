@@ -84,17 +84,24 @@ int GetFirstNonRadioActive(std::vector<Rabbit>& InArray)
 int main()
 {
 	std::vector<Rabbit> Rabbits;
+	// Nikola: You don't need to use a ptr to the rabbits, can always pass the original vector
 	std::vector<Rabbit>* RabbitsPTR = &Rabbits;
 	// init
 	std::cout << "World started!" << "\b";
 	InitWorld(Rabbits);
 	bool bEcosystemAlive = true;
 
+	// Nikola: To access the internal data with +
+	// This is commented because if you try to do it with an empty vector it will crash
+	//Rabbit* UnderlyingPtr = Rabbits.data();
+	//Rabbit* SecondElementPtr = (UnderlyingPtr + 1);
+
 	std::cout << "Automatic Cycle ? ";
 	char InputForCycle;
 	std::cin >> InputForCycle;
 	bool AutomaticWait = (InputForCycle == 'y');
 
+	// Nikola: Some variables are camelCase, others are in PascalCase
 	int grassCount = 500;
 	int grassMax = 500;
 	int lastSize = 5;
