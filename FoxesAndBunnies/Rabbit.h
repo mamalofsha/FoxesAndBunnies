@@ -30,15 +30,13 @@ protected:
 
 	virtual void Die() override;
 
-	Animal* Mom;
-
-
+	int MomIndex = -1;
 public:
 
 	// normal constructor 
 	Rabbit();
 	// constructor for being born with parents 
-	Rabbit(std::string FatherName ,std::vector<int> MomColor, Animal* InMom);
+	Rabbit(std::string FatherName ,std::vector<int> MomColor , int InMomIndex);
 	virtual bool EligibleForBreeding() override;
 
 	std::vector<int> GetColor();
@@ -46,7 +44,9 @@ public:
 
 	std::string GetLastName();
 
-	Animal* GetMom();
+	int GetMomIndex();
+
+	void ShiftIndex(int InErased);
 
 	bool GetRadioactive();
 

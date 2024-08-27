@@ -4,7 +4,6 @@
 Rabbit::Rabbit()
 {
 
-
 	std::random_device os_seed;
 	const u32 seed = os_seed();
 
@@ -43,10 +42,11 @@ Rabbit::Rabbit()
 }
 
 
-Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor ,Animal* InMom)
+Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor ,   int InMomIndex)
 {
 
-	Mom = InMom;
+	MomIndex = InMomIndex;
+	
 	std::random_device os_seed;
 	const u32 seed = os_seed();
 
@@ -59,8 +59,8 @@ Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor ,Animal* InMom)
 
 	// 2% chance for radio activity
 
-	if (distribute(generator) % 100 > 97)
-		TurnRadioActive();
+	//if (distribute(generator) % 100 > 97)
+	//	TurnRadioActive();
 	 
 	
 	// get new name and have father's last name
@@ -162,9 +162,14 @@ void Rabbit::Starve()
 
 }
 
-Animal* Rabbit::GetMom()
+int Rabbit::GetMomIndex()
 {
-	return Mom;
+	return MomIndex;
+}
+
+void Rabbit::ShiftIndex(int InErased)
+{
+	MomIndex -= InErased;
 }
 
 

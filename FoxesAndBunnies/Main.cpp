@@ -28,19 +28,20 @@ void InitWorld()
 	}
 }
 
-int GetFirstMaleInList()
+Rabbit* GetFirstMaleInList()
 {
+
 	for (int i = 0; i < Rabbits.size(); i++)
 	{
 
 		if (Rabbits[i].GetIsMale())
-			return i;
+			return &Rabbits[i];
 
 		// return Rabbits[i] and check for if it's valid 
 
 	}
 
-	return -1;
+	return nullptr;
 }
 
 
@@ -96,16 +97,18 @@ int main()
 
 	int grassCount = 500;
 	int grassMax = 500;
-
+	int lastSize = 5;
 	while (bEcosystemAlive)//ecosystemAlive)
 	{
 
+		int erased = 0;
 
 		// age up rabbits , remove them if dead
 		for (int i = Rabbits.size() - 1; i >= 0; i--)
-			if (Rabbits[i].AgeUp())
+			if (Rabbits[i].AgeUp()) {
 				Rabbits.erase(Rabbits.begin() + i);
-
+				erased++;
+			}
 
 
 
@@ -138,7 +141,7 @@ int main()
 			else {
 				Rabbits[i].Starve();
 				Rabbits.erase(Rabbits.begin() + i);
-
+				erased++;
 			}
 
 		}
@@ -150,8 +153,8 @@ int main()
 		{
 			if (!Rabbits[i].GetIsMale())
 				if (Rabbits[i].EligibleForBreeding()) {
-					if (GetFirstMaleInList() > -1) {
-						Rabbit x(Rabbits[GetFirstMaleInList()].GetLastName(), Rabbits[i].GetColor(), &Rabbits[i]);
+					if (GetFirstMaleInList()) {
+						Rabbit x(GetFirstMaleInList()->GetLastName(), Rabbits[i].GetColor(),i);
 						Rabbits.push_back(x);
 					}
 				}
@@ -189,6 +192,7 @@ int main()
 				bool oddDelete = Rabbits.size() % 2 > 0;
 				for (int i = Rabbits.size() - 1; i >= 0; i--)
 				{
+				
 					if (oddDelete && (i % 2 == 1))
 						Rabbits.erase(Rabbits.begin() + i);
 					if (!oddDelete && (i % 2 == 0))
@@ -198,14 +202,19 @@ int main()
 			}
 
 			for (int i = Rabbits.size() - 1; i >= 0; i--) {
-				if (Rabbits[i].GetMom() != nullptr)
+				if (Rabbits[i].GetMomIndex()>-1)
 				{
-				//	Animal* tempPtr = dynamic_cast<Rabbit*>(Rabbits[i].GetMom());
-				//	if(tempPtr)
-					Animal tempMom = *Rabbits[i].GetMom();
-					
-					std::cout << (*Rabbits[i].GetMom()).GetAge() << "-----------" << std::endl;
-					//std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << " Child of: " << (dynamic_cast<Rabbit*>(Rabbits[i].GetMom()))->GetFirstName() << "  " << (dynamic_cast<Rabbit*>(Rabbits[i].GetMom()))->GetLastName() << std::endl;
+					Rabbits[i].ShiftIndex(erased);
+					if (Rabbits[i].GetMomIndex() > -1)
+					{
+						int index = Rabbits[i].GetMomIndex();
+						std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << " Child of: " << Rabbits[index].GetFirstName() << "  " << Rabbits[index].GetLastName() <<"-----------" << Rabbits[index].GetAge() << std::endl;
+					}
+					else
+					{
+						std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << std::endl;
+					}
+
 				}
 				else
 					std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << std::endl;
