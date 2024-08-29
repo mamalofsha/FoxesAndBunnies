@@ -44,6 +44,7 @@ Rabbit::Rabbit()
 
 Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor ,   int InMomIndex, Rabbit& Animalptr)
 {
+	std::cout << "";
 	Mom = &Animalptr;
 	MomIndex = InMomIndex;
 	
