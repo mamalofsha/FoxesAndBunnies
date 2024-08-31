@@ -29,10 +29,8 @@ protected:
 	Rabbit* GetFirstMaleInList();
 	Rabbit* GetFirstNonRadioActive();
 	int Average(RatioType InRatioType);
-
 public:
 	World(int InRabbitCount = 5, int InGrassCount = 500, int InFoxCount = 5);
-
 	void Increase(WorldObjectType InWorldType,int InCount = 1);
 	int GetGrassCount();
 	bool GetWorldHeartBeat();

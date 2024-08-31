@@ -1,24 +1,18 @@
 #include "Rabbit.h"
 
-
 Rabbit::Rabbit()
 {
-
 	std::random_device os_seed;
 	const u32 seed = os_seed();
-
 	engine generator(seed);
 	std::uniform_int_distribution< u32 > distribute(0, 9999);
-
 	// gender randomizer 
 	bIsMale = distribute(generator) % 10 > 4;
 	Name = NameStorage::RandomFullName(bIsMale);
 	AgeLimit = 10;
-
 	// 2% chance for radio activity
 	if (distribute(generator) % 100 > 97)
 		TurnRadioActive();
-
 	// colo randomizer + info for printing 
 	std::string colorInfo;
 	for (int i = 0; i < 3; i++)
@@ -27,7 +21,6 @@ Rabbit::Rabbit()
 		Color.push_back(randomNumber);
 		colorInfo.append(i > 0 ? "," + std::to_string(randomNumber) : std::to_string(randomNumber));
 	}
-
 	// gender based name color 
 	HANDLE  hConsole{};
 	int k = bIsMale ? 3 : 5;
@@ -38,35 +31,25 @@ Rabbit::Rabbit()
 	k = bIsRadioactive ? 6 : 2;
 	SetConsoleTextAttribute(hConsole, k);
 	std::cout << " Was Born with Color of " + colorInfo << std::endl;
-
 }
 
-
-Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor ,   int InMomIndex, Rabbit& Animalptr)
+Rabbit::Rabbit( std::vector<int> InColor ,   int InMomIndex, Rabbit& Animalptr)
 {
 	std::cout << "";
 	Mom = &Animalptr;
 	MomIndex = InMomIndex;
-	
 	std::random_device os_seed;
 	const u32 seed = os_seed();
-
 	engine generator(seed);
 	std::uniform_int_distribution< u32 > distribute(0, 9999);
-
 	// gender randomizer 
 	bIsMale = distribute(generator) % 10 > 4;
 	AgeLimit = 10;
-
 	// 2% chance for radio activity
-
 	//if (distribute(generator) % 100 > 97)
 	//	TurnRadioActive();
-	 
-	
 	// get new name and have father's last name
-	Name = NameStorage::RandomFirstName(bIsMale) + " " + FatherName;
-
+	Name = NameStorage::RandomFirstName(bIsMale) + " " + NameStorage::RandomLastName();
 	// mom's color  +  info for printing 
 	Color = InColor;
 	std::string colorInfo;
@@ -82,10 +65,9 @@ Rabbit::Rabbit(std::string FatherName, std::vector<int> InColor ,   int InMomInd
 	// green color for birth + yellow for radioactive
 	k = bIsRadioactive ? 6 : 2;
 	SetConsoleTextAttribute(hConsole, k);
-
 	std::cout << " Was Born with Color of " + colorInfo << std::endl;
-
 }
+
 bool Rabbit::EligibleForBreeding()
 {
 	return GetAge() > 1 && !bIsRadioactive;
@@ -103,8 +85,6 @@ void Rabbit::Die()
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, k);
 	std::cout << Name + " Died :( " << std::endl;
-
-
 }
 
 enum class ExampleColor : uint8_t
@@ -118,7 +98,6 @@ void Rabbit::TurnRadioActive(bool ByBirth)
 	// e.g. UI and gameplay should be separate
 	// Option 1: Move the UI / logging code to a separate function
 	// Option 2: Use events/delegates, which is much more difficult to do right now, so let's leave for the future
-
 	if (!ByBirth) {
 		HANDLE  hConsole{};
 		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -127,16 +106,12 @@ void Rabbit::TurnRadioActive(bool ByBirth)
 		int k = bIsMale ? (FOREGROUND_BLUE | FOREGROUND_GREEN) : 5;
 		SetConsoleTextAttribute(hConsole, k);
 		std::cout << Name;
-
 		k = static_cast<int>(ExampleColor::Red);
 		SetConsoleTextAttribute(hConsole, k);
 		std::cout << " .::. ";
-
 		k = 6;
 		SetConsoleTextAttribute(hConsole, k);
-
 		std::cout << " Was bitten and turned radioactive" << std::endl;
-
 	}
 	bIsRadioactive = true;
 	AgeLimit = 50;
@@ -147,13 +122,11 @@ bool Rabbit::GetRadioactive()
 	return bIsRadioactive;
 }
 
-
 std::string Rabbit::GetFirstName()
 {
 	std::string delimiter = " ";
 	return Name.substr(0,Name.find(delimiter));
 }
-
 
 std::string Rabbit::GetLastName()
 {
@@ -163,13 +136,11 @@ std::string Rabbit::GetLastName()
 
 void Rabbit::Starve()
 {
-
 	HANDLE  hConsole{};
 	int k = 4;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, k);
 	std::cout << Name + " Starved  xP  " << std::endl;
-
 }
 
 Animal* Rabbit::GetMomPTR()

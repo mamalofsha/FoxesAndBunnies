@@ -1,12 +1,5 @@
 #include "Animal.h"
 
-
-
-
-
-
-
-
 bool Animal::EligibleForBreeding()
 {
 	return false;
@@ -15,7 +8,6 @@ bool Animal::EligibleForBreeding()
 bool Animal::AgeUp()
 {
 	++Age;
-	
 	return OverAgeLimit();
 }
 
@@ -35,7 +27,6 @@ bool Animal::OverAgeLimit()
 		Die();
 		return true;
 	}
-
 	return false;
 }
 
