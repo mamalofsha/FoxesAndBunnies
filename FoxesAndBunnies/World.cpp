@@ -1,5 +1,5 @@
 #include "World.h"
-
+#include "Tools.h"
 World::World(int InRabbitCount, int InGrassCount, int InFoxCount)
 {
 	EcosystemOnline = true;
@@ -135,19 +135,16 @@ void World::MoveCycleForward()
 				}
 			}
 	}
-	HANDLE  hConsole{};
-	int k = 15;
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, k);
-	std::cout << "cycle passed " << std::endl << std::endl;
-	std::cout << "Total Rabbit Population: " + std::to_string(Rabbits.size()) << std::endl;
-	std::cout << "Total Grass Remaining : " + std::to_string(GrassCount) << std::endl;
+	Tools::LogUI("cycle passed ", ExampleColor::White);
+	Tools::LogUI("Total Rabbit Population: " + std::to_string(Rabbits.size()), ExampleColor::White);
+	Tools::LogUI("Total Grass Remaining : " + std::to_string(GrassCount), ExampleColor::White);
+	Tools::LogUI("With Average age of: " + std::to_string(Average(RatioType::Age)), ExampleColor::White);
+	Tools::LogUI(std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive", ExampleColor::White);
 	Increase(WorldObjectType::Grass, 1);
-	std::cout << "With Average age of: " + std::to_string(Average(RatioType::Age)) << std::endl;
-	std::cout << std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive" << std::endl << std::endl;
+
 	if (Rabbits.size() > 1000)
 	{
-		std::cout << "Rabbit overflow , \"snap\" " << std::endl;
+		Tools::LogUI("Rabbit overflow , \"snap\" ", ExampleColor::White);
 		bool oddDelete = Rabbits.size() % 2 > 0;
 		for (int i = Rabbits.size() - 1; i >= 0; i--)
 		{
@@ -159,9 +156,8 @@ void World::MoveCycleForward()
 	}
 	for (int i = Rabbits.size() - 1; i >= 0; i--) {
 		if (Rabbits[i].GetMomPTR())
-			std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << " Child of: " << static_cast<Rabbit*>(Rabbits[i].GetMomPTR())->GetFirstName() << "  " << static_cast<Rabbit*>(Rabbits[i].GetMomPTR())->GetLastName() << "-----------" << static_cast<Rabbit*>(Rabbits[i].GetMomPTR())->GetAge() << std::endl;
+			Tools::LogUI(Rabbits[i].GetFirstName() + " " + Rabbits[i].GetLastName() + " " + std::to_string(Rabbits[i].GetAge()) + " Child of: " + static_cast<Rabbit*>(Rabbits[i].GetMomPTR())->GetFirstName() + "  " + static_cast<Rabbit*>(Rabbits[i].GetMomPTR())->GetLastName() + "-----------" + std::to_string(static_cast<Rabbit*>(Rabbits[i].GetMomPTR())->GetAge()), ExampleColor::White);
 		else
-			std::cout << Rabbits[i].GetFirstName() << " " << Rabbits[i].GetLastName() << " " << Rabbits[i].GetAge() << std::endl;
-		std::cout << std::endl;
+			Tools::LogUI(Rabbits[i].GetFirstName() + " " + Rabbits[i].GetLastName() + " " + std::to_string(Rabbits[i].GetAge()), ExampleColor::White);
 	}
 }

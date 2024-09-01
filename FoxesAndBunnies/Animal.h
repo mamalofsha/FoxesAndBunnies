@@ -13,7 +13,7 @@ protected:
 	int AgeLimit;
 	bool IsMale;
 	virtual bool EligibleForBreeding() ;
-	virtual void Die();
+	virtual void Die() {};
 	bool OverAgeLimit();
 public:
 	virtual bool AgeUp();

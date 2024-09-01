@@ -29,8 +29,3 @@ bool Animal::OverAgeLimit()
 	}
 	return false;
 }
-
-void Animal::Die()
-{
-	
-}

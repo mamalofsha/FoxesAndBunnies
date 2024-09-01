@@ -19,21 +19,12 @@ Rabbit::Rabbit()
 		Color.push_back(randomNumber);
 		colorInfo.append(i > 0 ? "," + std::to_string(randomNumber) : std::to_string(randomNumber));
 	}
-	// gender based name color 
-	HANDLE  hConsole{};
-	int k = IsMale ? 3 : 5;
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, k);
-	std::cout << Name;
-	// green color for birth + yellow for radioactive
-	k = IsRadioactive ? 6 : 2;
-	SetConsoleTextAttribute(hConsole, k);
-	std::cout << " Was Born with Color of " + colorInfo << std::endl;
+	Tools::LogUI(Name, IsMale ? ExampleColor::Blue : ExampleColor::Magenta);
+	Tools::LogUI(" Was Born with Color of " + colorInfo, IsRadioactive ? ExampleColor::Yellow : ExampleColor::Green);
 }
 
 Rabbit::Rabbit( std::vector<int> InColor , Rabbit& Animalptr)
 {
-	std::cout << "";
 	Mom = &Animalptr;
 	int RandomNumber = Tools::RandomInRange(9999);
 	// gender randomizer 
@@ -48,18 +39,10 @@ Rabbit::Rabbit( std::vector<int> InColor , Rabbit& Animalptr)
 	Color = InColor;
 	std::string colorInfo;
 	for (int i = 0; i < 3; i++)
-	{
 		colorInfo.append(i > 0 ? "," + std::to_string(Color[i]) : std::to_string(Color[i]));
-	}
-	HANDLE  hConsole{};
-	int k = IsMale ? 3 : 5;
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, k);
-	std::cout << Name;
-	// green color for birth + yellow for radioactive
-	k = IsRadioactive ? 6 : 2;
-	SetConsoleTextAttribute(hConsole, k);
-	std::cout << " Was Born with Color of " + colorInfo << std::endl;
+	
+	Tools::LogUI(Name, IsMale ? ExampleColor::Blue : ExampleColor::Magenta);
+	Tools::LogUI(" Was Born with Color of " + colorInfo, IsRadioactive ? ExampleColor::Yellow : ExampleColor::Green);
 }
 
 bool Rabbit::EligibleForBreeding()
@@ -74,38 +57,16 @@ std::vector<int> Rabbit::GetColor()
 
 void Rabbit::Die()
 {
-	HANDLE  hConsole{};
-	int k = 4;
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, k);
-	std::cout << Name + " Died :( " << std::endl;
+	Tools::LogUI(Name + " Died :(", ExampleColor::Red);
 }
 
-enum class ExampleColor : uint8_t
-{
-	Red = FOREGROUND_RED
-};
 
 void Rabbit::TurnRadioActive(bool ByBirth)
 {
-	// Nikola: Avoid mixing code with different goals
-	// e.g. UI and gameplay should be separate
-	// Option 1: Move the UI / logging code to a separate function
-	// Option 2: Use events/delegates, which is much more difficult to do right now, so let's leave for the future
 	if (!ByBirth) {
-		HANDLE  hConsole{};
-		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-		std::cout << std::endl;
-		// Nikola: Don't use magic numbers
-		int k = IsMale ? (FOREGROUND_BLUE | FOREGROUND_GREEN) : 5;
-		SetConsoleTextAttribute(hConsole, k);
-		std::cout << Name;
-		k = static_cast<int>(ExampleColor::Red);
-		SetConsoleTextAttribute(hConsole, k);
-		std::cout << " .::. ";
-		k = 6;
-		SetConsoleTextAttribute(hConsole, k);
-		std::cout << " Was bitten and turned radioactive" << std::endl;
+		Tools::LogUI(Name, IsMale ? ExampleColor::Blue : ExampleColor::Magenta);
+		Tools::LogUI(" .::. ", ExampleColor::Red);
+		Tools::LogUI(" Was bitten and turned radioactive", ExampleColor::Yellow);
 	}
 	IsRadioactive = true;
 	AgeLimit = 50;
@@ -130,11 +91,7 @@ std::string Rabbit::GetLastName()
 
 void Rabbit::Starve()
 {
-	HANDLE  hConsole{};
-	int k = 4;
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, k);
-	std::cout << Name + " Starved  xP  " << std::endl;
+	Tools::LogUI(Name + " Starved  xP  ", ExampleColor::Red);
 }
 
 Animal* Rabbit::GetMomPTR()

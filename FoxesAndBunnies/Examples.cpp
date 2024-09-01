@@ -42,10 +42,13 @@ int main_examples()
 }
 
 
+// Nikola: Avoid mixing code with different goals
+// e.g. UI and gameplay should be separate
+// Option 1: Move the UI / logging code to a separate function
+// Option 2: Use events/delegates, which is much more difficult to do right now, so let's leave for the future
 
 
-
-
+// Nikola: Don't use magic numbers
 /*
 *
 	std::string myString = "Hello, world!";

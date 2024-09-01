@@ -7,6 +7,7 @@
 #include "NameStorage.h"
 #include "Rabbit.h"
 #include "World.h"
+#include "Tools.h"
 
 bool SetupInput();
 void WorldCycle(World* InWorld);
@@ -15,17 +16,17 @@ bool AutomaticWait;
 int main()
 {
 	World* CurrentWorld = new World(5, 500, 5);
-	std::cout << "World started!";
+	Tools::LogUI("World Started !", ExampleColor::White);
 	AutomaticWait = SetupInput();
 	while (CurrentWorld->GetWorldHeartBeat())
 		WorldCycle(CurrentWorld);
-	std::cout << "World Ended!";
+	Tools::LogUI("World Ended!", ExampleColor::White);
 	return 0;
 }
 
 bool SetupInput()
 {
-	std::cout << "Automatic Cycle ? ";
+	Tools::LogUI("Automatic Cycle ? ", ExampleColor::White);
 	char InputForCycle;
 	std::cin >> InputForCycle;
 	return (InputForCycle == 'y');
