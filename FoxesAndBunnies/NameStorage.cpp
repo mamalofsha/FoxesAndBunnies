@@ -1,4 +1,5 @@
 #include "NameStorage.h"
+#include "Tools.h"
 
 std::vector<std::string> NameStorage::MaleFirstNames = {
     "Alice", "Bob", "Charlie", "David", "Emily", "Rez", "Darth", "JJ", "OG", "Purple",
@@ -22,31 +23,22 @@ std::vector<std::string> NameStorage::LastNames = {
 
 std::string NameStorage::RandomFullName(bool IsMale)
 {
-    std::random_device os_seed;
-    const u32 seed = os_seed();
-    engine generator(seed);
-    std::uniform_int_distribution< u32 > distribute(0, 9999);
-	int FirstNameIndex = distribute(generator) % (IsMale ?  MaleFirstNames.size() : FemaleFirstNames.size());
-	int LastNameIndex = distribute(generator) % LastNames.size();
+    int RandomNumber = Tools::RandomInRange(9999);
+	int FirstNameIndex = RandomNumber % (IsMale ?  MaleFirstNames.size() : FemaleFirstNames.size());
+	int LastNameIndex = RandomNumber % LastNames.size();
 	return  (IsMale ? MaleFirstNames[FirstNameIndex] : FemaleFirstNames[FirstNameIndex]) + " " + LastNames[LastNameIndex];
 }
 
 std::string NameStorage::RandomFirstName(bool IsMale)
 {
-    std::random_device os_seed;
-    const u32 seed = os_seed();
-    engine generator(seed);
-    std::uniform_int_distribution< u32 > distribute(0, 9999);
-    int FirstNameIndex = distribute(generator) % (IsMale ? MaleFirstNames.size() : FemaleFirstNames.size());
+    int RandomNumber = Tools::RandomInRange(9999);
+    int FirstNameIndex = RandomNumber % (IsMale ? MaleFirstNames.size() : FemaleFirstNames.size());
     return   IsMale ? MaleFirstNames[FirstNameIndex] : FemaleFirstNames[FirstNameIndex];
 }
 
 std::string NameStorage::RandomLastName()
 {
-    std::random_device os_seed;
-    const u32 seed = os_seed();
-    engine generator(seed);
-    std::uniform_int_distribution< u32 > distribute(0, 9999);
-    int LastNameIndex = distribute(generator) % LastNames.size();
+    int RandomNumber = Tools::RandomInRange(9999);
+    int LastNameIndex = RandomNumber % LastNames.size();
     return   LastNames[LastNameIndex];
 }

@@ -130,7 +130,7 @@ void World::MoveCycleForward()
 		if (!Rabbits[i].GetIsMale())
 			if (Rabbits[i].EligibleForBreeding()) {
 				if (GetFirstMaleInList()) {
-					Rabbit TempRabbit( Rabbits[i].GetColor(), i, Rabbits[i]);
+					Rabbit TempRabbit( Rabbits[i].GetColor(),Rabbits[i]);
 					Rabbits.push_back(TempRabbit);
 				}
 			}

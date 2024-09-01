@@ -18,7 +18,7 @@ int Animal::GetAge()
 
 bool Animal::GetIsMale()
 {
-	return bIsMale;
+	return IsMale;
 }
 
 bool Animal::OverAgeLimit()

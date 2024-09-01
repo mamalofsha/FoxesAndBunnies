@@ -1,55 +1,49 @@
 #include "Rabbit.h"
+#include "Tools.h"
 
 Rabbit::Rabbit()
 {
-	std::random_device os_seed;
-	const u32 seed = os_seed();
-	engine generator(seed);
-	std::uniform_int_distribution< u32 > distribute(0, 9999);
+	int RandomNumber = Tools::RandomInRange(9999);
 	// gender randomizer 
-	bIsMale = distribute(generator) % 10 > 4;
-	Name = NameStorage::RandomFullName(bIsMale);
+	IsMale = RandomNumber % 10 > 4;
+	Name = NameStorage::RandomFullName(IsMale);
 	AgeLimit = 10;
 	// 2% chance for radio activity
-	if (distribute(generator) % 100 > 97)
+	if (RandomNumber % 100 > 97)
 		TurnRadioActive();
 	// colo randomizer + info for printing 
 	std::string colorInfo;
 	for (int i = 0; i < 3; i++)
 	{
-		int randomNumber = distribute(generator) % 256;
+		int randomNumber = RandomNumber % 256;
 		Color.push_back(randomNumber);
 		colorInfo.append(i > 0 ? "," + std::to_string(randomNumber) : std::to_string(randomNumber));
 	}
 	// gender based name color 
 	HANDLE  hConsole{};
-	int k = bIsMale ? 3 : 5;
+	int k = IsMale ? 3 : 5;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, k);
 	std::cout << Name;
 	// green color for birth + yellow for radioactive
-	k = bIsRadioactive ? 6 : 2;
+	k = IsRadioactive ? 6 : 2;
 	SetConsoleTextAttribute(hConsole, k);
 	std::cout << " Was Born with Color of " + colorInfo << std::endl;
 }
 
-Rabbit::Rabbit( std::vector<int> InColor ,   int InMomIndex, Rabbit& Animalptr)
+Rabbit::Rabbit( std::vector<int> InColor , Rabbit& Animalptr)
 {
 	std::cout << "";
 	Mom = &Animalptr;
-	MomIndex = InMomIndex;
-	std::random_device os_seed;
-	const u32 seed = os_seed();
-	engine generator(seed);
-	std::uniform_int_distribution< u32 > distribute(0, 9999);
+	int RandomNumber = Tools::RandomInRange(9999);
 	// gender randomizer 
-	bIsMale = distribute(generator) % 10 > 4;
+	IsMale = RandomNumber % 10 > 4;
 	AgeLimit = 10;
 	// 2% chance for radio activity
-	//if (distribute(generator) % 100 > 97)
-	//	TurnRadioActive();
+	if (RandomNumber % 100 > 97)
+		TurnRadioActive();
 	// get new name and have father's last name
-	Name = NameStorage::RandomFirstName(bIsMale) + " " + NameStorage::RandomLastName();
+	Name = NameStorage::RandomFirstName(IsMale) + " " + NameStorage::RandomLastName();
 	// mom's color  +  info for printing 
 	Color = InColor;
 	std::string colorInfo;
@@ -58,19 +52,19 @@ Rabbit::Rabbit( std::vector<int> InColor ,   int InMomIndex, Rabbit& Animalptr)
 		colorInfo.append(i > 0 ? "," + std::to_string(Color[i]) : std::to_string(Color[i]));
 	}
 	HANDLE  hConsole{};
-	int k = bIsMale ? 3 : 5;
+	int k = IsMale ? 3 : 5;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, k);
 	std::cout << Name;
 	// green color for birth + yellow for radioactive
-	k = bIsRadioactive ? 6 : 2;
+	k = IsRadioactive ? 6 : 2;
 	SetConsoleTextAttribute(hConsole, k);
 	std::cout << " Was Born with Color of " + colorInfo << std::endl;
 }
 
 bool Rabbit::EligibleForBreeding()
 {
-	return GetAge() > 1 && !bIsRadioactive;
+	return GetAge() > 1 && !IsRadioactive;
 }
 
 std::vector<int> Rabbit::GetColor()
@@ -103,7 +97,7 @@ void Rabbit::TurnRadioActive(bool ByBirth)
 		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 		std::cout << std::endl;
 		// Nikola: Don't use magic numbers
-		int k = bIsMale ? (FOREGROUND_BLUE | FOREGROUND_GREEN) : 5;
+		int k = IsMale ? (FOREGROUND_BLUE | FOREGROUND_GREEN) : 5;
 		SetConsoleTextAttribute(hConsole, k);
 		std::cout << Name;
 		k = static_cast<int>(ExampleColor::Red);
@@ -113,13 +107,13 @@ void Rabbit::TurnRadioActive(bool ByBirth)
 		SetConsoleTextAttribute(hConsole, k);
 		std::cout << " Was bitten and turned radioactive" << std::endl;
 	}
-	bIsRadioactive = true;
+	IsRadioactive = true;
 	AgeLimit = 50;
 }
 
 bool Rabbit::GetRadioactive()
 {
-	return bIsRadioactive;
+	return IsRadioactive;
 }
 
 std::string Rabbit::GetFirstName()
@@ -147,17 +141,3 @@ Animal* Rabbit::GetMomPTR()
 {
 	return Mom;
 }
-
-int Rabbit::GetMomIndex()
-{
-	return MomIndex;
-}
-
-void Rabbit::ShiftIndex(int InErased)
-{
-	MomIndex -= InErased;
-	//--Mom;
-}
-
-
-
