@@ -17,5 +17,4 @@ void Tools::LogUI(std::string InString, ExampleColor InColor)
 	SetConsoleTextAttribute(hConsole, static_cast<int>(InColor));
 	std::cout << InString;
 	std::cout << std::endl;
-
 }

@@ -12,15 +12,16 @@ Rabbit::Rabbit()
 	if (RandomNumber % 100 > 97)
 		TurnRadioActive();
 	// colo randomizer + info for printing 
-	std::string colorInfo;
+	std::string ColorInfo;
 	for (int i = 0; i < 3; i++)
 	{
+		RandomNumber = Tools::RandomInRange(9999);
 		int randomNumber = RandomNumber % 256;
 		Color.push_back(randomNumber);
-		colorInfo.append(i > 0 ? "," + std::to_string(randomNumber) : std::to_string(randomNumber));
+		ColorInfo.append(i > 0 ? "," + std::to_string(randomNumber) : std::to_string(randomNumber));
 	}
 	Tools::LogUI(Name, IsMale ? ExampleColor::Blue : ExampleColor::Magenta);
-	Tools::LogUI(" Was Born with Color of " + colorInfo, IsRadioactive ? ExampleColor::Yellow : ExampleColor::Green);
+	Tools::LogUI(" Was Born with Color of " + ColorInfo, IsRadioactive ? ExampleColor::Yellow : ExampleColor::Green);
 }
 
 Rabbit::Rabbit( std::vector<int> InColor , Rabbit& Animalptr)
@@ -37,12 +38,11 @@ Rabbit::Rabbit( std::vector<int> InColor , Rabbit& Animalptr)
 	Name = NameStorage::RandomFirstName(IsMale) + " " + NameStorage::RandomLastName();
 	// mom's color  +  info for printing 
 	Color = InColor;
-	std::string colorInfo;
+	std::string ColorInfo;
 	for (int i = 0; i < 3; i++)
-		colorInfo.append(i > 0 ? "," + std::to_string(Color[i]) : std::to_string(Color[i]));
-	
+		ColorInfo.append(i > 0 ? "," + std::to_string(Color[i]) : std::to_string(Color[i]));
 	Tools::LogUI(Name, IsMale ? ExampleColor::Blue : ExampleColor::Magenta);
-	Tools::LogUI(" Was Born with Color of " + colorInfo, IsRadioactive ? ExampleColor::Yellow : ExampleColor::Green);
+	Tools::LogUI(" Was Born with Color of " + ColorInfo, IsRadioactive ? ExampleColor::Yellow : ExampleColor::Green);
 }
 
 bool Rabbit::EligibleForBreeding()
@@ -58,6 +58,11 @@ std::vector<int> Rabbit::GetColor()
 void Rabbit::Die()
 {
 	Tools::LogUI(Name + " Died :(", ExampleColor::Red);
+}
+
+std::string Rabbit::GetFullInfo()
+{
+	return GetFirstName()+" "+GetLastName();
 }
 
 

@@ -29,5 +29,7 @@ public:
 	static int RandomInRange(int InMaxNumber);
 
 	static void LogUI(std::string InString, ExampleColor InColor);
+	static void LogUI(std::string InString, std::vector<int> InRGB) {};
+
 };
 

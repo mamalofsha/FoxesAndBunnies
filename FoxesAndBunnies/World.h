@@ -4,12 +4,13 @@
 #include <string>
 #include <vector>
 #include "Rabbit.h"
+#include "Fox.h"
 
 enum WorldObjectType
 {
-	Rabbyte,
-	Grass,
-	Foxes
+	TypeOfRabbit,
+	TypeOfGrass,
+	TypeOfFox
 };
 enum RatioType
 {
@@ -24,8 +25,12 @@ private:
 	int MaxGrassCount = 500;
 	int GrassCount = 500;
 	std::vector<Rabbit> Rabbits;
+	std::vector<Fox> Foxes;
+
 protected:
 	void SpawnRabbit(std::vector<Rabbit>& InRabbits,int InCount = 1);
+	void SpawnFox(std::vector<Fox>& InFoxes, int InCount = 1);
+
 	Rabbit* GetFirstMaleInList();
 	Rabbit* GetFirstNonRadioActive();
 	int Average(RatioType InRatioType);
@@ -35,6 +40,7 @@ public:
 	int GetGrassCount();
 	bool GetWorldHeartBeat();
 	std::vector<Rabbit>& GetRabbits();
+	std::vector<Fox>& GetFoxes();
 	void MoveCycleForward();
 };
 
