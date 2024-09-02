@@ -26,7 +26,6 @@ private:
 	int GrassCount = 500;
 	std::vector<Rabbit> Rabbits;
 	std::vector<Fox> Foxes;
-
 protected:
 	void SpawnRabbit(std::vector<Rabbit>& InRabbits,int InCount = 1);
 	void SpawnFox(std::vector<Fox>& InFoxes, int InCount = 1);
@@ -43,4 +42,3 @@ public:
 	std::vector<Fox>& GetFoxes();
 	void MoveCycleForward();
 };
-

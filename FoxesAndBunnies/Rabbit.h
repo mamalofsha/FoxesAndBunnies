@@ -4,8 +4,6 @@
 #include <cstdlib> 
 #include "NameStorage.h"
 
-
-
 class Rabbit :public Animal
 {
 private: 

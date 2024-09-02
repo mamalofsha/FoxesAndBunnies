@@ -15,7 +15,7 @@ bool AutomaticWait;
 
 int main()
 {
-	World* CurrentWorld = new World(10, 500, 2);
+	World* CurrentWorld = new World(5, 500, 2);
 	Tools::LogUI("World Started !", ExampleColor::White);
 	AutomaticWait = SetupInput();
 	while (CurrentWorld->GetWorldHeartBeat())

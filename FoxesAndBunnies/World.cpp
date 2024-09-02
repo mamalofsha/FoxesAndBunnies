@@ -134,9 +134,7 @@ void World::MoveCycleForward()
 			FoxSpawnCount = FemaleFoxes.size();
 		else
 			FoxSpawnCount = MaleFoxes.size();
-
 		Increase(WorldObjectType::TypeOfFox, FoxSpawnCount);
-
 	}
 	// foxes feeding
 	for (int i = Foxes.size() - 1; i >= 0; i--)
@@ -151,13 +149,12 @@ void World::MoveCycleForward()
 		{
 			if (Rabbits.size() > 0)
 			{
-				int TargetRabbit = Tools::RandomInRange(Rabbits.size() - 1);
+				int TargetRabbit = Tools::RandomInRange(Rabbits.size()-1);
 				if (j == 0)
 					Tools::LogUI("A fox just ate: " + Rabbits[TargetRabbit].GetFullInfo(), ExampleColor::Red);
 				else
 					Tools::LogUI("A lucky fox just ate: " + Rabbits[TargetRabbit].GetFullInfo(), ExampleColor::Red);
 				bool RadioActiveBite = Rabbits[TargetRabbit].GetRadioactive();
-				Rabbits.erase(Rabbits.begin() + TargetRabbit);
 				if (RadioActiveBite)
 				{
 					if (Tools::RandomInRange(10) > 7)
@@ -169,6 +166,7 @@ void World::MoveCycleForward()
 				}
 				else
 					Foxes[i].BecomeHaunted(Rabbits[TargetRabbit]);
+				Rabbits.erase(Rabbits.begin() + TargetRabbit);
 			}
 			else
 			{
@@ -236,7 +234,8 @@ void World::MoveCycleForward()
 	Tools::LogUI("With Average age of: " + std::to_string(Average(RatioType::Age)), ExampleColor::White);
 	Tools::LogUI(std::to_string(Average(RatioType::Radioactivity)) + "% Radioactive", ExampleColor::White);
 	Increase(WorldObjectType::TypeOfGrass, 1);
-
+	if (Rabbits.size() == 0)
+		EcosystemOnline = false;
 	if (Rabbits.size() > 1000)
 	{
 		Tools::LogUI("Rabbit overflow , \"snap\" ", ExampleColor::White);

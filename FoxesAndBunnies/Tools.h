@@ -4,10 +4,6 @@
 #include <random>
 #include <iostream>
 #include <windows.h> 
-// k 2 born 
-// k 3 boy 
-// k 4 death 
-// k 5 girlll
 
 enum class ExampleColor : uint8_t
 {
