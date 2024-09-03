@@ -29,7 +29,6 @@ private:
 protected:
 	void SpawnRabbit(std::vector<Rabbit>& InRabbits,int InCount = 1);
 	void SpawnFox(std::vector<Fox>& InFoxes, int InCount = 1);
-
 	Rabbit* GetFirstMaleInList();
 	Rabbit* GetFirstNonRadioActive();
 	int Average(RatioType InRatioType);

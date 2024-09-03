@@ -13,7 +13,6 @@ enum class ExampleColor : uint8_t
 	Yellow = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN,
 	Magenta = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE,
 	White = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
-
 };
 
 using u32 = uint_least32_t;
@@ -23,9 +22,6 @@ class Tools
 {
 public:
 	static int RandomInRange(int InMaxNumber);
-
 	static void LogUI(std::string InString, ExampleColor InColor);
 	static void LogUI(std::string InString, std::vector<int> InRGB) {};
-
 };
-

@@ -6,7 +6,6 @@ Fox::Fox()
     IsMale = Tools::RandomInRange(10) > 5;
     AgeLimit = 20;
     Tools::LogUI("A Fox was born", IsMale ? ExampleColor::Blue : ExampleColor::Magenta);
-
 }
 
 bool Fox::AgeUp()

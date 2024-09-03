@@ -65,7 +65,6 @@ std::string Rabbit::GetFullInfo()
 	return GetFirstName()+" "+GetLastName();
 }
 
-
 void Rabbit::TurnRadioActive(bool ByBirth)
 {
 	if (!ByBirth) {
