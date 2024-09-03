@@ -30,6 +30,7 @@ void World::SpawnFox(std::vector<Fox>& InFoxes, int InCount)
 
 Rabbit* World::GetFirstMaleInList()
 {
+	// Nikola: Algo
 	for (int i = 0; i < Rabbits.size(); i++)
 	{
 		if (Rabbits[i].GetIsMale())
@@ -40,6 +41,7 @@ Rabbit* World::GetFirstMaleInList()
 
 Rabbit* World::GetFirstNonRadioActive()
 {
+	// Nikola: Algo
 	for (int i = 0; i < Rabbits.size(); i++)
 	{
 		if (!Rabbits[i].GetRadioactive())
@@ -68,6 +70,7 @@ int World::Average(RatioType InRatioType)
 	return total / (Rabbits.size() > 0 ? Rabbits.size() : 1);
 }
 
+// Nikola: Type erasure/templates
 void World::Increase(WorldObjectType InWorldType, int InCount)
 {
 	switch (InWorldType)
@@ -116,6 +119,7 @@ void World::MoveCycleForward()
 {
 	std::vector<int> MaleFoxes;
 	std::vector<int> FemaleFoxes;
+	// Nikola: Algo::partition
 	// fox mating 
 	for (int i = 0; i < Foxes.size(); i++)
 	{
@@ -237,6 +241,25 @@ void World::MoveCycleForward()
 			if (!OddDelete && (i % 2 == 0))
 				Rabbits.erase(Rabbits.begin() + i);
 		}
+		// Nikola: Avoid having non-loop dependent variables in the loop
+		// Nikola: std::remove_if
+		//if (OddDelete)
+		//{
+		//	for (int i = Rabbits.size() - 1; i >= 0; i--)
+		//	{
+		//		if (i % 2 == 1)
+		//			Rabbits.erase(Rabbits.begin() + i);
+		//	}
+		//}
+		//else
+		//{
+		//	for (int i = Rabbits.size() - 1; i >= 0; i--)
+		//	{
+		//		if (i % 2 == 0)
+		//			Rabbits.erase(Rabbits.begin() + i);
+		//	}
+		//}
+
 	}
 	for (int i = Rabbits.size() - 1; i >= 0; i--) {
 		std::string ColorInfo;

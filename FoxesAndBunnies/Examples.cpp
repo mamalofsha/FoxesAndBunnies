@@ -13,7 +13,7 @@ class TArrayOfInts
 	int size;
 };
 
-int main_examples()
+int main_example_2708()
 {
 	int arr[5] = { 1, 2, 3, 4, 5 };
 	int* arrPtr = arr;
@@ -71,12 +71,82 @@ int main_examples()
 
 
 // Nikola: You don't need to use a ptr to the rabbits, can always pass the original vector
-//std::vector<Rabbit>* RabbitsPTR = &Rabbits;
+//std::vector<RabbitExample>* RabbitsPTR = &Rabbits;
 // init
 
 
 // Nikola: To access the internal data with +
 // This is commented because if you try to do it with an empty vector it will crash
-//Rabbit* UnderlyingPtr = Rabbits.data();
-//Rabbit* SecondElementPtr = (UnderlyingPtr + 1);
+//RabbitExample* UnderlyingPtr = Rabbits.data();
+//RabbitExample* SecondElementPtr = (UnderlyingPtr + 1);
 
+int MomReferences = 0;
+
+struct SharedPtrHelper
+{
+	class RabbitExample* RabbitExample = nullptr;
+	bool IsValid;
+
+	SharedPtrHelper()
+	{
+		MomReferences++;
+	}
+
+	~SharedPtrHelper()
+	{
+		MomReferences--;
+		if (MomReferences == 0)
+		{
+			delete RabbitExample;
+			IsValid = false;
+		}
+	}
+};
+
+struct Necklace {};
+
+struct RabbitExample
+{
+	const char* Name = "Anna";
+	std::unique_ptr<Necklace> Jewelery;
+	std::shared_ptr<RabbitExample> Mom;
+	std::weak_ptr<RabbitExample> MomButForgotten;
+};
+
+
+
+int main_examples_0309()
+{
+	std::vector<std::shared_ptr<RabbitExample>> rabbits;
+	rabbits.push_back(std::make_shared<RabbitExample>());
+	rabbits.push_back(std::make_shared<RabbitExample>());
+	rabbits.push_back(std::make_shared<RabbitExample>());
+
+	std::shared_ptr<RabbitExample> keepForgottenMotherAlive;
+	{
+		std::shared_ptr<RabbitExample> m = std::make_shared<RabbitExample>();
+		rabbits[0]->Mom = m;
+		rabbits[1]->Mom = m;
+		rabbits[2]->Mom = m;
+
+		std::shared_ptr<RabbitExample> forgottenM = std::make_shared<RabbitExample>();
+		rabbits[0]->MomButForgotten = forgottenM;
+		rabbits[1]->MomButForgotten = forgottenM;
+		rabbits[2]->MomButForgotten = forgottenM;
+		keepForgottenMotherAlive = forgottenM;
+	}
+	if (rabbits[0]->Mom) // r.Mom == 0x420
+	{
+		std::cout << rabbits[0]->Mom->Name;
+	}
+	if (std::shared_ptr<RabbitExample> m = rabbits[0]->MomButForgotten.lock()) // r.Mom == 0x420
+	{
+		std::cout << "Forgotten mom is still valid: " << m->Name;
+	}
+	else
+	{
+		std::cout << "Forgotten mom is no longer valid";
+	}
+	
+	return 0;
+}
