@@ -15,15 +15,15 @@ bool Fox::AgeUp()
         HauntCounter--;
         if (HauntCounter == 0) {
             IsHaunted = false;
-            Tools::LogUI(Haunter.GetFullInfo() + " Goes to after life",ExampleColor::Yellow);
-            if(Haunter.GetMomPTR())
-            Tools::LogUI("Mom "+ static_cast<Rabbit*>(Haunter.GetMomPTR())->GetFullInfo()+" Accepts Death of "+ Haunter.GetFullInfo(), ExampleColor::Yellow);
+            Tools::LogUI(Haunter->GetFullInfo() + " Goes to after life",ExampleColor::Yellow);
+            if(Haunter->GetMomPTR())
+            Tools::LogUI("Mom "+Haunter->GetMomPTR()->GetFullInfo()+" Accepts Death of "+ Haunter->GetFullInfo(), ExampleColor::Yellow);
         }
     }
     return Animal::AgeUp();
 }
 
-void Fox::BecomeHaunted(Rabbit InHaunter)
+void Fox::BecomeHaunted(std::shared_ptr<Rabbit>& InHaunter)
 {
     if (!IsHaunted) {
         Haunter = InHaunter;

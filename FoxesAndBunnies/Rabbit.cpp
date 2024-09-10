@@ -8,6 +8,7 @@ Rabbit::Rabbit()
 	IsMale = RandomNumber % 10 > 4;
 	Name = NameStorage::RandomFullName(IsMale);
 	AgeLimit = 10;
+	IsRadioactive = false;
 	// 2% chance for radio activity
 	if (RandomNumber % 100 > 97)
 		TurnRadioActive();
@@ -24,13 +25,14 @@ Rabbit::Rabbit()
 	Tools::LogUI(" Was Born with Color of " + ColorInfo, IsRadioactive ? ExampleColor::Yellow : ExampleColor::Green);
 }
 
-Rabbit::Rabbit( std::vector<int> InColor , Rabbit& Animalptr)
+Rabbit::Rabbit( std::vector<int> InColor , std::shared_ptr<Rabbit> InMomPTR)
 {
-	Mom = &Animalptr;
+	MomPTR = InMomPTR;
 	int RandomNumber = Tools::RandomInRange(9999);
 	// gender randomizer 
 	IsMale = RandomNumber % 10 > 4;
 	AgeLimit = 10;
+	IsRadioactive = false;
 	// 2% chance for radio activity
 	if (RandomNumber % 100 > 97)
 		TurnRadioActive();
@@ -98,7 +100,7 @@ void Rabbit::Starve()
 	Tools::LogUI(Name + " Starved  xP  ", ExampleColor::Red);
 }
 
-Animal* Rabbit::GetMomPTR()
+std::shared_ptr<Rabbit> Rabbit::GetMomPTR()
 {
-	return Mom;
+	return MomPTR;
 }

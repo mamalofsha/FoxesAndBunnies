@@ -12,17 +12,17 @@ private:
 	std::vector<int> Color;
 protected:
 	virtual void Die() override;
-	Animal* Mom;
+	std::shared_ptr<class Rabbit> MomPTR;
 public:
 	// normal constructor 
 	Rabbit();
 	// constructor for being born with parents 
-	Rabbit(std::vector<int> MomColor , Rabbit& Animalptr);
+	Rabbit(std::vector<int> InMomColor , std::shared_ptr<Rabbit> InMomPTR);
 	virtual bool EligibleForBreeding() override;
 	std::vector<int> GetColor();
 	std::string GetFirstName();
 	std::string GetLastName();
-	Animal* GetMomPTR();
+	std::shared_ptr<class Rabbit> GetMomPTR();
 	bool GetRadioactive();
 	virtual void Starve() override;
 	void TurnRadioActive(bool ByBirth = true);

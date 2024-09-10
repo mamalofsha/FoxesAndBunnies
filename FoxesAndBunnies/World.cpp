@@ -3,49 +3,49 @@
 World::World(int InRabbitCount, int InGrassCount, int InFoxCount)
 {
 	EcosystemOnline = true;
-	Rabbits.reserve(1999);
-	Foxes.reserve(1999);
+	//Rabbits.reserve(1999);
+	//Foxes.reserve(1999);
 	Increase(WorldObjectType::TypeOfRabbit, InRabbitCount);
 	Increase(WorldObjectType::TypeOfGrass, InGrassCount);
 	Increase(WorldObjectType::TypeOfFox, InFoxCount);
 }
 
-void World::SpawnRabbit(std::vector<Rabbit>& InRabbits, int InCount)
+void World::SpawnRabbit(int InCount)
 {
 	for (int i = 0; i < InCount; i++)
 	{
-		Rabbit NewTempRabbit;
-		InRabbits.push_back(NewTempRabbit);
-	}
+		std::shared_ptr<Rabbit> NewTempRabbit = std::make_shared<Rabbit>();
+		Rabbits.push_back(NewTempRabbit);
+	}// NewTempRabbit out of scope , but pointer stays alive because it's referenced by the Rabbits
 }
 
-void World::SpawnFox(std::vector<Fox>& InFoxes, int InCount)
+void World::SpawnFox(int InCount)
 {
 	for (int i = 0; i < InCount; i++)
 	{
-		Fox NewTempFox;
-		InFoxes.push_back(NewTempFox);
+		std::shared_ptr<Fox> NewTempFox = std::make_shared<Fox>();
+		Foxes.push_back(NewTempFox);
 	}
 }
 
-Rabbit* World::GetFirstMaleInList()
+std::shared_ptr<Rabbit> World::GetFirstMaleInList()
 {
 	// Nikola: Algo
 	for (int i = 0; i < Rabbits.size(); i++)
 	{
-		if (Rabbits[i].GetIsMale())
-			return &Rabbits[i];
+		if (Rabbits[i]->GetIsMale())
+			return Rabbits[i];
 	}
 	return nullptr;
 }
 
-Rabbit* World::GetFirstNonRadioActive()
+std::shared_ptr<Rabbit> World::GetFirstNonRadioActive()
 {
 	// Nikola: Algo
 	for (int i = 0; i < Rabbits.size(); i++)
 	{
-		if (!Rabbits[i].GetRadioactive())
-			return &Rabbits[i];
+		if (!Rabbits[i]->GetRadioactive())
+			return Rabbits[i];
 	}
 	return nullptr;
 }
@@ -58,10 +58,10 @@ int World::Average(RatioType InRatioType)
 		switch (InRatioType)
 		{
 		case Radioactivity:
-			total += (Rabbits[i].GetRadioactive() ? 1 : 0) * 100;
+			total += (Rabbits[i]->GetRadioactive() ? 1 : 0) * 100;
 			break;
 		case Age:
-			total += Rabbits[i].GetAge();
+			total += Rabbits[i]->GetAge();
 			break;
 		default:
 			break;
@@ -76,7 +76,7 @@ void World::Increase(WorldObjectType InWorldType, int InCount)
 	switch (InWorldType)
 	{
 	case TypeOfRabbit:
-		SpawnRabbit(Rabbits, InCount);
+		SpawnRabbit(InCount);
 		break;
 	case TypeOfGrass:
 		if (MaxGrassCount == 0)
@@ -88,7 +88,7 @@ void World::Increase(WorldObjectType InWorldType, int InCount)
 			GrassCount += InCount % (MaxGrassCount - GrassCount + 1);
 		break;
 	case TypeOfFox:
-		SpawnFox(Foxes, InCount);
+		SpawnFox(InCount);
 		break;
 	default:
 		break;
@@ -105,12 +105,12 @@ bool World::GetWorldHeartBeat()
 	return EcosystemOnline;
 }
 
-std::vector<Rabbit>& World::GetRabbits()
+std::vector<std::shared_ptr<Rabbit>> World::GetRabbits()
 {
 	return Rabbits;
 }
 
-std::vector<Fox>& World::GetFoxes()
+std::vector<std::shared_ptr<Fox>> World::GetFoxes()
 {
 	return Foxes;
 }
@@ -123,9 +123,9 @@ void World::MoveCycleForward()
 	// fox mating 
 	for (int i = 0; i < Foxes.size(); i++)
 	{
-		if (Foxes[i].GetIsMale() && Foxes[i].EligibleForBreeding())
+		if (Foxes[i]->GetIsMale() && Foxes[i]->EligibleForBreeding())
 			MaleFoxes.push_back(i);
-		if (!Foxes[i].GetIsMale() && Foxes[i].EligibleForBreeding())
+		if (!Foxes[i]->GetIsMale() && Foxes[i]->EligibleForBreeding())
 			FemaleFoxes.push_back(i);
 	}
 	if (MaleFoxes.size() > 0 && FemaleFoxes.size() > 0)
@@ -137,10 +137,11 @@ void World::MoveCycleForward()
 			FoxSpawnCount = MaleFoxes.size();
 		Increase(WorldObjectType::TypeOfFox, FoxSpawnCount);
 	}
+	
 	// foxes feeding
 	for (int i = Foxes.size() - 1; i >= 0; i--)
 	{
-		if (Foxes[i].GetAge() < 2)
+		if (Foxes[i]->GetAge() < 2)
 			continue;
 		bool DoubleFeed = false;
 		if (static_cast<float>(GrassCount) / static_cast<float>(MaxGrassCount) < 0.2)
@@ -152,10 +153,10 @@ void World::MoveCycleForward()
 			{
 				int TargetRabbit = Tools::RandomInRange(Rabbits.size() - 1);
 				if (j == 0)
-					Tools::LogUI("A fox just ate: " + Rabbits[TargetRabbit].GetFullInfo(), ExampleColor::Red);
+					Tools::LogUI("A fox just ate: " + Rabbits[TargetRabbit]->GetFullInfo(), ExampleColor::Red);
 				else
-					Tools::LogUI("A lucky fox just ate: " + Rabbits[TargetRabbit].GetFullInfo(), ExampleColor::Red);
-				bool RadioActiveBite = Rabbits[TargetRabbit].GetRadioactive();
+					Tools::LogUI("A lucky fox just ate: " + Rabbits[TargetRabbit]->GetFullInfo(), ExampleColor::Red);
+				bool RadioActiveBite = Rabbits[TargetRabbit]->GetRadioactive();
 				if (RadioActiveBite)
 				{
 					if (Tools::RandomInRange(10) > 7)
@@ -166,7 +167,7 @@ void World::MoveCycleForward()
 					}
 				}
 				else
-					Foxes[i].BecomeHaunted(Rabbits[TargetRabbit]);
+					Foxes[i]->BecomeHaunted(Rabbits[TargetRabbit]);
 				Rabbits.erase(Rabbits.begin() + TargetRabbit);
 			}
 			else
@@ -183,18 +184,20 @@ void World::MoveCycleForward()
 			}
 		}
 	}
+	
 	// age up foxes
 	for (int i = Foxes.size() - 1; i >= 0; i--)
-		if (Foxes[i].AgeUp())
+		if (Foxes[i]->AgeUp())
 			Foxes.erase(Foxes.begin() + i);
+	
 	// age up rabbits , remove them if dead
 	for (int i = Rabbits.size() - 1; i >= 0; i--)
-		if (Rabbits[i].AgeUp())
+		if (Rabbits[i]->AgeUp())
 			Rabbits.erase(Rabbits.begin() + i);
 	// rabbit infection
 	std::vector<int> Infectors;
 	for (int i = 0; i < Rabbits.size(); i++) 
-		if (Rabbits[i].GetRadioactive())
+		if (Rabbits[i]->GetRadioactive())
 			Infectors.push_back(i);
 	for (int i = 0; i < Infectors.size(); i++)
 		if (GetFirstNonRadioActive())
@@ -202,21 +205,22 @@ void World::MoveCycleForward()
 	Infectors.clear();
 	/// rabbit feed
 	for (int i = Rabbits.size() - 1; i >= 0; i--) {
-		int GrassCost = Rabbits[i].GetRadioactive() ? 4 : 2;
+		int GrassCost = Rabbits[i]->GetRadioactive() ? 4 : 2;
 		if (GrassCount > GrassCost)
 			GrassCount -= GrassCost;
 		else {
-			Rabbits[i].Starve();
+			Rabbits[i]->Starve();
 			Rabbits.erase(Rabbits.begin() + i);
 		}
 	}
 	// rabbit mate
+	
 	for (int i = 0; i < Rabbits.size(); i++)
 	{
-		if (!Rabbits[i].GetIsMale())
-			if (Rabbits[i].EligibleForBreeding()) {
+		if (!Rabbits[i]->GetIsMale())
+			if (Rabbits[i]->EligibleForBreeding()) {
 				if (GetFirstMaleInList()) {
-					Rabbit TempRabbit(Rabbits[i].GetColor(), Rabbits[i]);
+					std::shared_ptr<Rabbit> TempRabbit = std::make_shared<Rabbit>(Rabbits[i]->GetColor(), Rabbits[i]);
 					Rabbits.push_back(TempRabbit);
 				}
 			}
@@ -264,10 +268,10 @@ void World::MoveCycleForward()
 	for (int i = Rabbits.size() - 1; i >= 0; i--) {
 		std::string ColorInfo;
 		for (int j = 0; j < 3; j++)
-			ColorInfo.append(j > 0 ? "," + std::to_string(Rabbits[i].GetColor()[j]) : std::to_string(Rabbits[i].GetColor()[j]));
-		if (Rabbits[i].GetMomPTR())
-			Tools::LogUI(Rabbits[i].GetFirstName() + " " + Rabbits[i].GetLastName() + " " + std::to_string(Rabbits[i].GetAge()) + " With Color of :" + ColorInfo + (Rabbits[i].GetRadioactive() ? " RadioActive " : " Non RadioActive ") + " Child of: " + static_cast<Rabbit*>(Rabbits[i].GetMomPTR())->GetFirstName() + "  " + static_cast<Rabbit*>(Rabbits[i].GetMomPTR())->GetLastName() + " with Age of: " + std::to_string(static_cast<Rabbit*>(Rabbits[i].GetMomPTR())->GetAge()), ExampleColor::White);
+			ColorInfo.append(j > 0 ? "," + std::to_string(Rabbits[i]->GetColor()[j]) : std::to_string(Rabbits[i]->GetColor()[j]));
+		if (Rabbits[i]->GetMomPTR())
+			Tools::LogUI(Rabbits[i]->GetFirstName() + " " + Rabbits[i]->GetLastName() + " " + std::to_string(Rabbits[i]->GetAge()) + " With Color of :" + ColorInfo + (Rabbits[i]->GetRadioactive() ? " RadioActive " : " Non RadioActive ") + " Child of: " +  Rabbits[i]->GetMomPTR()->GetFirstName() + "  " + (Rabbits[i]->GetMomPTR())->GetLastName() + " with Age of: " + std::to_string(Rabbits[i]->GetMomPTR()->GetAge()), ExampleColor::White);
 		else
-			Tools::LogUI(Rabbits[i].GetFirstName() + " " + Rabbits[i].GetLastName() + " " + std::to_string(Rabbits[i].GetAge()) + " With Color of :" + ColorInfo + (Rabbits[i].GetRadioactive() ? " RadioActive " : " Non RadioActive "), ExampleColor::White);
+			Tools::LogUI(Rabbits[i]->GetFirstName() + " " + Rabbits[i]->GetLastName() + " " + std::to_string(Rabbits[i]->GetAge()) + " With Color of :" + ColorInfo + (Rabbits[i]->GetRadioactive() ? " RadioActive " : " Non RadioActive "), ExampleColor::White);
 	}
 }
