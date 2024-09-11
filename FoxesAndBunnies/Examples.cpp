@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <numeric>
+#include <assert.h>
 
 int Sum(int& v1, int& v2)
 {
@@ -148,5 +151,115 @@ int main_examples_0309()
 		std::cout << "Forgotten mom is no longer valid";
 	}
 	
+	return 0;
+}
+
+struct Rabbit
+{
+	bool IsRadioactive;
+	int Age;
+	bool IsMale;
+};
+
+int SquareInteger(int num)
+{
+	return num * num;
+}
+
+bool IsOld(const Rabbit& rabbit)
+{
+	return rabbit.Age > 10;
+}
+bool IsRabbitMale(const Rabbit& rabbit)
+{
+	return rabbit.IsMale;
+}
+bool CanRabbitBeMother(const Rabbit& rabbit)
+{
+	return !rabbit.IsMale && rabbit.Age >= 10 && !rabbit.IsRadioactive;
+}
+
+
+
+Rabbit BreedRabbit(const Rabbit& mother)
+{
+	//assert(!mother.IsMale);
+	Rabbit r;
+	r.Age = 0;
+	r.IsMale = rand() % 2;
+	r.IsRadioactive = false;
+	return r;
+}
+
+int main_examples_110924()
+{
+	// Old way
+	// 0 load 0x567 42
+	// 1 add 0x123 0x567
+	// 2 cmp 0x567 42 
+	// 3 jmp 10
+	// 	...
+	// 10 ...
+
+	// 2 New ways
+	// OOP: Rabbit { age, food, isRadioactive }; vector<Rabbit> list
+	// Functional / data programming: vector<int> listOfAges; vector<food> listOfHunger; vector<bool> listOfRadioactivity
+
+	std::vector<int> values = { 4, 5, 10, 15, 600 };
+	int sum = 0;
+	for (int& v : values)
+	{
+		sum += v;
+	}
+	std::cout << sum << "\n";
+
+	int functionalSum = std::accumulate(values.begin(), values.end(), 0);
+
+	std::sort(values.begin(), values.end());
+
+	std::random_shuffle(values.begin(), values.end());
+
+	std::vector<int> squaredValues;
+	std::transform(values.begin(), values.end(), std::back_inserter(squaredValues), SquareInteger);
+	for (int& num : squaredValues)
+	{
+		std::cout << num << " ";
+	}
+	std::cout << "\n";
+
+	std::vector<Rabbit> rabbits = {
+		{ true, 10, false },
+		{ false, 15, false },
+		{ false, 25, true },
+		{ true, 17, true },
+	};
+
+	auto IsRabbitRadioactive = [](const Rabbit& rabbit)
+		{
+			return rabbit.IsRadioactive;
+		};
+
+	int numRadioactive = std::count_if(rabbits.begin(), rabbits.end(), IsRabbitRadioactive);
+	std::cout << "Radioactive: " << numRadioactive << "\n";
+
+	int numOld = std::count_if(rabbits.begin(), rabbits.end(), IsOld);
+	std::cout << "Old: " << numOld << "\n";
+
+	bool isThereAMale = std::any_of(rabbits.begin(), rabbits.end(), IsRabbitMale);
+	bool AreAllRadioactive = std::all_of(rabbits.begin(), rabbits.end(), IsRabbitRadioactive);
+
+	std::transform(rabbits.begin(), rabbits.begin() + rabbits.size() - 1, std::back_inserter(rabbits), BreedRabbit);
+
+	rabbits.erase(std::remove_if(rabbits.begin(), rabbits.end(), IsOld), rabbits.end());
+
+	for (const Rabbit& r : rabbits)
+	{
+		std::cout << r.Age << " ";
+	}
+	std::cout << "\n";
+
+	auto SquareNum = [](int num) { return num * num; };
+	std::transform(values.begin(), values.end(), std::back_inserter(squaredValues), SquareNum);
+
 	return 0;
 }
