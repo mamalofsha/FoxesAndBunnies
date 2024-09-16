@@ -1,5 +1,15 @@
 #include "World.h"
 #include "Tools.h"
+#include <algorithm>
+#include <numeric>
+#include <assert.h>
+
+std::shared_ptr<Rabbit> World::BreedRabbit(const std::shared_ptr<Rabbit>& InMom)
+{
+	std::shared_ptr<Rabbit> TempRabbit = std::make_shared<Rabbit>();
+	return TempRabbit;
+}
+
 World::World(int InRabbitCount, int InGrassCount, int InFoxCount)
 {
 	EcosystemOnline = true;
@@ -70,6 +80,8 @@ int World::Average(RatioType InRatioType)
 	return total / (Rabbits.size() > 0 ? Rabbits.size() : 1);
 }
 
+
+
 // Nikola: Type erasure/templates
 void World::Increase(WorldObjectType InWorldType, int InCount)
 {
@@ -117,10 +129,41 @@ std::vector<std::shared_ptr<Fox>> World::GetFoxes()
 
 void World::MoveCycleForward()
 {
-	std::vector<int> MaleFoxes;
-	std::vector<int> FemaleFoxes;
 	// Nikola: Algo::partition
 	// fox mating 
+	/// new way
+	auto IsFoxMale = [](const std::shared_ptr<Fox>& InFox)
+		{
+			return InFox->GetIsMale() && InFox->EligibleForBreeding();
+		};
+	auto IsFoxFemale = [](const std::shared_ptr<Fox>& InFox)
+		{
+			return !InFox->GetIsMale() && InFox->EligibleForBreeding();
+		};
+	int FoxMaleCount = std::count_if(Foxes.begin(), Foxes.end(), IsFoxMale);
+	int FoxFemaleCount = std::count_if(Foxes.begin(), Foxes.end(), IsFoxFemale);
+	// then spawn with the lower value
+	//new way using partition
+	int EligibleFoxesCount_Partition = count_if(Foxes.begin(), Foxes.end(), [](const std::shared_ptr<Fox>& InFox)
+		{
+			return InFox->EligibleForBreeding();
+		});
+	partition(Foxes.begin(), Foxes.end(), [](const std::shared_ptr<Fox>& InFox)
+		{
+			// first partition the eligible ones for breeding
+			return InFox->EligibleForBreeding();
+		});
+	int MaleFoxes_Partition = count_if(Foxes.begin(), Foxes.begin() + EligibleFoxesCount_Partition, [](const std::shared_ptr<Fox>& InFox)
+		{
+			return InFox->GetIsMale();
+		});
+	// determining spawn count using partition
+	int FoxSpawnCount_UsingPartition = ((EligibleFoxesCount_Partition - MaleFoxes_Partition) < MaleFoxes_Partition) ? EligibleFoxesCount_Partition - MaleFoxes_Partition : MaleFoxes_Partition;
+	Increase(WorldObjectType::TypeOfFox, FoxSpawnCount_UsingPartition);
+	// getting male and female count old way
+	/*
+	std::vector<int> MaleFoxes;
+	std::vector<int> FemaleFoxes;
 	for (int i = 0; i < Foxes.size(); i++)
 	{
 		if (Foxes[i]->GetIsMale() && Foxes[i]->EligibleForBreeding())
@@ -128,6 +171,7 @@ void World::MoveCycleForward()
 		if (!Foxes[i]->GetIsMale() && Foxes[i]->EligibleForBreeding())
 			FemaleFoxes.push_back(i);
 	}
+	// determining spawn count old way 
 	if (MaleFoxes.size() > 0 && FemaleFoxes.size() > 0)
 	{
 		int FoxSpawnCount;
@@ -137,7 +181,7 @@ void World::MoveCycleForward()
 			FoxSpawnCount = MaleFoxes.size();
 		Increase(WorldObjectType::TypeOfFox, FoxSpawnCount);
 	}
-	
+	*/
 	// foxes feeding
 	for (int i = Foxes.size() - 1; i >= 0; i--)
 	{
@@ -184,26 +228,76 @@ void World::MoveCycleForward()
 			}
 		}
 	}
-	
 	// age up foxes
+	// new way
+	auto IsFoxOld = [](const std::shared_ptr<Fox>& InFox)
+		{
+			return InFox->AgeUp();
+		};
+	Foxes.erase(std::remove_if(Foxes.begin(), Foxes.end(), IsFoxOld), Foxes.end());
+	// old way
+	/*
 	for (int i = Foxes.size() - 1; i >= 0; i--)
 		if (Foxes[i]->AgeUp())
 			Foxes.erase(Foxes.begin() + i);
-	
+			*/
 	// age up rabbits , remove them if dead
+	//new way
+	auto IsRabbitOld = [](const std::shared_ptr<Rabbit>& InRabbit)
+		{
+			return InRabbit->AgeUp();
+		};
+	Rabbits.erase(std::remove_if(Rabbits.begin(), Rabbits.end(), IsRabbitOld), Rabbits.end());
+	// old way 
+	/*
 	for (int i = Rabbits.size() - 1; i >= 0; i--)
 		if (Rabbits[i]->AgeUp())
 			Rabbits.erase(Rabbits.begin() + i);
+	*/
 	// rabbit infection
-	std::vector<int> Infectors;
-	for (int i = 0; i < Rabbits.size(); i++) 
-		if (Rabbits[i]->GetRadioactive())
-			Infectors.push_back(i);
-	for (int i = 0; i < Infectors.size(); i++)
+	// new way
+	auto IsRadioActive = [](const std::shared_ptr<Rabbit>& InRabbit)
+		{
+			return InRabbit->GetRadioactive();
+		};
+	int NumRadioActive = std::count_if(Rabbits.begin(), Rabbits.end(), IsRadioActive);
+	for (int i = 0; i < NumRadioActive; i++)
+	{
 		if (GetFirstNonRadioActive())
 			GetFirstNonRadioActive()->TurnRadioActive(false);
-	Infectors.clear();
+		else
+			continue;
+	}
+	/// how to use conditional transform so we turn the non radio active radioactive?
+		//old way 
+		/*
+		std::vector<int> Infectors;
+		for (int i = 0; i < Rabbits.size(); i++)
+			if (Rabbits[i]->GetRadioactive())
+				Infectors.push_back(i);
+		for (int i = 0; i < Infectors.size(); i++)
+			if (GetFirstNonRadioActive())
+				GetFirstNonRadioActive()->TurnRadioActive(false);
+		Infectors.clear();
+		*/
 	/// rabbit feed
+	// new way
+	auto IsShortOnFood = [this](const std::shared_ptr<Rabbit>& InRabbit)
+		{
+			int GrassCost = InRabbit->GetRadioactive() ? 4 : 2;
+			if (GrassCount > GrassCost) 
+			{
+				GrassCount -= GrassCost;
+				return false;
+			}
+			else {
+				InRabbit->Starve();
+				return true;
+			}
+		};
+	Rabbits.erase(std::remove_if(Rabbits.begin(), Rabbits.end(), IsShortOnFood), Rabbits.end());
+	//old way
+	/*
 	for (int i = Rabbits.size() - 1; i >= 0; i--) {
 		int GrassCost = Rabbits[i]->GetRadioactive() ? 4 : 2;
 		if (GrassCount > GrassCost)
@@ -213,8 +307,28 @@ void World::MoveCycleForward()
 			Rabbits.erase(Rabbits.begin() + i);
 		}
 	}
-	// rabbit mate
-	
+	*/
+	// rabbit mate new way
+	auto IsRabbitMale = [](const std::shared_ptr<Rabbit>& InRabbit)
+		{
+			return InRabbit->GetIsMale() && InRabbit->EligibleForBreeding();
+		};
+	bool IsThereAMaleRabbit = std::any_of(Rabbits.begin(), Rabbits.end(), IsRabbitMale);
+	if (IsThereAMaleRabbit)
+	{
+		for (int i = 0; i < Rabbits.size(); i++)
+		{
+			if (!Rabbits[i]->GetIsMale())
+				if (Rabbits[i]->EligibleForBreeding()) {
+						std::shared_ptr<Rabbit> TempRabbit = std::make_shared<Rabbit>(Rabbits[i]->GetColor(), Rabbits[i]);
+						Rabbits.push_back(TempRabbit);
+				}
+		}
+		// how to do this
+		//std::transform(Rabbits.begin(), Rabbits.begin() + Rabbits.size() - 1, back_inserter(Rabbits), BreedRabbit);
+	}
+	// rabbit mate old way 
+	/*
 	for (int i = 0; i < Rabbits.size(); i++)
 	{
 		if (!Rabbits[i]->GetIsMale())
@@ -225,6 +339,7 @@ void World::MoveCycleForward()
 				}
 			}
 	}
+	*/
 	Tools::LogUI("cycle passed ", ExampleColor::White);
 	Tools::LogUI("Total Fox Population: " + std::to_string(Foxes.size()), ExampleColor::White);
 	Tools::LogUI("Total Rabbit Population: " + std::to_string(Rabbits.size()), ExampleColor::White);
@@ -270,7 +385,7 @@ void World::MoveCycleForward()
 		for (int j = 0; j < 3; j++)
 			ColorInfo.append(j > 0 ? "," + std::to_string(Rabbits[i]->GetColor()[j]) : std::to_string(Rabbits[i]->GetColor()[j]));
 		if (Rabbits[i]->GetMomPTR())
-			Tools::LogUI(Rabbits[i]->GetFirstName() + " " + Rabbits[i]->GetLastName() + " " + std::to_string(Rabbits[i]->GetAge()) + " With Color of :" + ColorInfo + (Rabbits[i]->GetRadioactive() ? " RadioActive " : " Non RadioActive ") + " Child of: " +  Rabbits[i]->GetMomPTR()->GetFirstName() + "  " + (Rabbits[i]->GetMomPTR())->GetLastName() + " with Age of: " + std::to_string(Rabbits[i]->GetMomPTR()->GetAge()), ExampleColor::White);
+			Tools::LogUI(Rabbits[i]->GetFirstName() + " " + Rabbits[i]->GetLastName() + " " + std::to_string(Rabbits[i]->GetAge()) + " With Color of :" + ColorInfo + (Rabbits[i]->GetRadioactive() ? " RadioActive " : " Non RadioActive ") + " Child of: " + Rabbits[i]->GetMomPTR()->GetFirstName() + "  " + (Rabbits[i]->GetMomPTR())->GetLastName() + " with Age of: " + std::to_string(Rabbits[i]->GetMomPTR()->GetAge()), ExampleColor::White);
 		else
 			Tools::LogUI(Rabbits[i]->GetFirstName() + " " + Rabbits[i]->GetLastName() + " " + std::to_string(Rabbits[i]->GetAge()) + " With Color of :" + ColorInfo + (Rabbits[i]->GetRadioactive() ? " RadioActive " : " Non RadioActive "), ExampleColor::White);
 	}
