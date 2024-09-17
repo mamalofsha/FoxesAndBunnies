@@ -153,7 +153,8 @@ void World::MoveCycleForward()
 			// first partition the eligible ones for breeding
 			return InFox->EligibleForBreeding();
 		});
-	int MaleFoxes_Partition = count_if(Foxes.begin(), Foxes.begin() + EligibleFoxesCount_Partition, [](const std::shared_ptr<Fox>& InFox)
+	// smaller number (male / all - male = female ) is the final spawn count  
+	int MaleFoxes_Partition = count_if(Foxes.begin(), Foxes.begin() + EligibleFoxesCount_Partition , [](const std::shared_ptr<Fox>& InFox)
 		{
 			return InFox->GetIsMale();
 		});
@@ -185,7 +186,7 @@ void World::MoveCycleForward()
 	// foxes feeding
 	for (int i = Foxes.size() - 1; i >= 0; i--)
 	{
-		if (Foxes[i]->GetAge() < 2)
+		if (Foxes[i]->GetAge() <= 2)
 			continue;
 		bool DoubleFeed = false;
 		if (static_cast<float>(GrassCount) / static_cast<float>(MaxGrassCount) < 0.2)

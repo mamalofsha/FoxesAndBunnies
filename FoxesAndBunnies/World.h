@@ -35,7 +35,7 @@ protected:
 	int Average(RatioType InRatioType);
 public:
 	std::shared_ptr<Rabbit> BreedRabbit(const std::shared_ptr<Rabbit>& InMom);
-	World(int InRabbitCount = 5, int InGrassCount = 500, int InFoxCount = 5);
+	World(int InRabbitCount = 5, int InGrassCount = 500, int InFoxCount = 2);
 	void Increase(WorldObjectType InWorldType,int InCount = 1);
 	int GetGrassCount();
 	bool GetWorldHeartBeat();
