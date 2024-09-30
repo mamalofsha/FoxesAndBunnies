@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "Rabbit.h"
+#include "Tools.h"
 #include "Fox.h"
 
 enum WorldObjectType
@@ -33,6 +34,8 @@ protected:
 	std::shared_ptr<Rabbit> GetFirstMaleInList();
 	std::shared_ptr<Rabbit> GetFirstNonRadioActive();
 	int Average(RatioType InRatioType);
+	void FoxEatRabbit(std::string x);
+	class Tools ToolRef;
 public:
 	std::shared_ptr<Rabbit> BreedRabbit(const std::shared_ptr<Rabbit>& InMom);
 	World(int InRabbitCount = 5, int InGrassCount = 500, int InFoxCount = 2);

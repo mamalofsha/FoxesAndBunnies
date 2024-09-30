@@ -18,6 +18,14 @@ World::World(int InRabbitCount, int InGrassCount, int InFoxCount)
 	Increase(WorldObjectType::TypeOfRabbit, InRabbitCount);
 	Increase(WorldObjectType::TypeOfGrass, InGrassCount);
 	Increase(WorldObjectType::TypeOfFox, InFoxCount);
+	//
+	Tools Tool;
+	Tools::FFoxEatenHandler lambdaDamageHandler = [](std::string InName) {					
+		Tools::LogUI("A fox just ate: " + InName, ExampleColor::Red);
+		};
+	Tool.OnFoxEaten = lambdaDamageHandler;
+	//
+	ToolRef = Tool;
 }
 
 void World::SpawnRabbit(int InCount)
@@ -78,6 +86,10 @@ int World::Average(RatioType InRatioType)
 		}
 	}
 	return total / (Rabbits.size() > 0 ? Rabbits.size() : 1);
+}
+
+void World::FoxEatRabbit(std::string x)
+{
 }
 
 
@@ -198,9 +210,9 @@ void World::MoveCycleForward()
 			{
 				int TargetRabbit = Tools::RandomInRange(Rabbits.size() - 1);
 				if (j == 0)
-					Tools::LogUI("A fox just ate: " + Rabbits[TargetRabbit]->GetFullInfo(), ExampleColor::Red);
+					ToolRef.FoxEatRabbitCall(Rabbits[TargetRabbit]->GetFullInfo());
 				else
-					Tools::LogUI("A lucky fox just ate: " + Rabbits[TargetRabbit]->GetFullInfo(), ExampleColor::Red);
+					ToolRef.FoxEatRabbitCall(Rabbits[TargetRabbit]->GetFullInfo()); //Tools::LogUI("A lucky fox just ate: " + Rabbits[TargetRabbit]->GetFullInfo(), ExampleColor::Red);
 				bool RadioActiveBite = Rabbits[TargetRabbit]->GetRadioactive();
 				if (RadioActiveBite)
 				{
