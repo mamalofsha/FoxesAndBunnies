@@ -24,11 +24,23 @@ public:
 	static int RandomInRange(int InMaxNumber);
 	static void LogUI(std::string InString, ExampleColor InColor);
 	static void LogUI(std::string InString, std::vector<int> InRGB) {};
-	using FFoxEatenHandler = void (*)(std::string);
-	void FoxEatRabbitCall(std::string InName)
+	using FFoxEatenHandler = void (*)(std::string,bool);
+	void FoxEatRabbitCall(std::string InName, bool IsLucky)
 	{
-		OnFoxEaten(InName);
+		OnFoxEaten(InName, IsLucky);
 	}
 	FFoxEatenHandler OnFoxEaten;
-	void Log(std::string x);
+	using FFoxGotPoisoned = void (*)();
+	void FoxGotPoisoned()
+	{
+		OnFoxPoisoned();
+	}
+	FFoxGotPoisoned OnFoxPoisoned;
+	using FFoxStillHungry = void (*)(bool);
+	void FoxStillHungry(bool Starved)
+	{
+		OnFoxStillHungry(Starved);
+	}
+	FFoxStillHungry OnFoxStillHungry;
+
 };

@@ -18,13 +18,29 @@ World::World(int InRabbitCount, int InGrassCount, int InFoxCount)
 	Increase(WorldObjectType::TypeOfRabbit, InRabbitCount);
 	Increase(WorldObjectType::TypeOfGrass, InGrassCount);
 	Increase(WorldObjectType::TypeOfFox, InFoxCount);
-	//
+	// setting up events 
 	Tools Tool;
-	Tools::FFoxEatenHandler lambdaDamageHandler = [](std::string InName) {					
-		Tools::LogUI("A fox just ate: " + InName, ExampleColor::Red);
-		};
-	Tool.OnFoxEaten = lambdaDamageHandler;
 	//
+	Tools::FFoxEatenHandler LambdaFoxFeedingHandler = [](std::string InName, bool IsLucky) {
+		if (!IsLucky)
+			Tools::LogUI("A fox just ate: " + InName, ExampleColor::Red);
+		else
+			Tools::LogUI("A lucky fox just ate: " + InName, ExampleColor::Red);
+		};
+	Tool.OnFoxEaten = LambdaFoxFeedingHandler;
+	//
+	Tools::FFoxGotPoisoned LambdaFoxGotPoisoned = [](){
+			Tools::LogUI("The rabbit was radioactive and it killed a fox ", ExampleColor::Red);
+		};
+	Tool.OnFoxPoisoned = LambdaFoxGotPoisoned;
+	//
+	Tools::FFoxStillHungry LambdaFoxStillHungry = [](bool Starved) {
+		if(Starved)
+			Tools::LogUI("A fox starved XP ", ExampleColor::Red);
+		else
+			Tools::LogUI("Somewhere a fox is still hungry ", ExampleColor::Yellow);
+		}; 
+	Tool.OnFoxStillHungry = LambdaFoxStillHungry;
 	ToolRef = Tool;
 }
 
@@ -166,7 +182,7 @@ void World::MoveCycleForward()
 			return InFox->EligibleForBreeding();
 		});
 	// smaller number (male / all - male = female ) is the final spawn count  
-	int MaleFoxes_Partition = count_if(Foxes.begin(), Foxes.begin() + EligibleFoxesCount_Partition , [](const std::shared_ptr<Fox>& InFox)
+	int MaleFoxes_Partition = count_if(Foxes.begin(), Foxes.begin() + EligibleFoxesCount_Partition, [](const std::shared_ptr<Fox>& InFox)
 		{
 			return InFox->GetIsMale();
 		});
@@ -184,7 +200,7 @@ void World::MoveCycleForward()
 		if (!Foxes[i]->GetIsMale() && Foxes[i]->EligibleForBreeding())
 			FemaleFoxes.push_back(i);
 	}
-	// determining spawn count old way 
+	// determining spawn count old way
 	if (MaleFoxes.size() > 0 && FemaleFoxes.size() > 0)
 	{
 		int FoxSpawnCount;
@@ -210,15 +226,15 @@ void World::MoveCycleForward()
 			{
 				int TargetRabbit = Tools::RandomInRange(Rabbits.size() - 1);
 				if (j == 0)
-					ToolRef.FoxEatRabbitCall(Rabbits[TargetRabbit]->GetFullInfo());
+					ToolRef.FoxEatRabbitCall(Rabbits[TargetRabbit]->GetFullInfo(),false);
 				else
-					ToolRef.FoxEatRabbitCall(Rabbits[TargetRabbit]->GetFullInfo()); //Tools::LogUI("A lucky fox just ate: " + Rabbits[TargetRabbit]->GetFullInfo(), ExampleColor::Red);
+					ToolRef.FoxEatRabbitCall(Rabbits[TargetRabbit]->GetFullInfo(),true);
 				bool RadioActiveBite = Rabbits[TargetRabbit]->GetRadioactive();
 				if (RadioActiveBite)
 				{
 					if (Tools::RandomInRange(10) > 7)
 					{
-						Tools::LogUI("The rabbit was radioactive and it killed a fox ", ExampleColor::Red);
+						ToolRef.FoxGotPoisoned();
 						Foxes.erase(Foxes.begin() + i);
 						break;
 					}
@@ -230,13 +246,13 @@ void World::MoveCycleForward()
 			else
 			{
 				if (j == 0) {
-					Tools::LogUI("A fox starved XP ", ExampleColor::Red);
+					ToolRef.FoxStillHungry(true);
 					Foxes.erase(Foxes.begin() + i);
 					break;
 				}
 				else
 				{
-					Tools::LogUI("Somewhere a fox is still hungry ", ExampleColor::Yellow);
+					ToolRef.FoxStillHungry(false);
 				}
 			}
 		}
@@ -254,8 +270,8 @@ void World::MoveCycleForward()
 		if (Foxes[i]->AgeUp())
 			Foxes.erase(Foxes.begin() + i);
 			*/
-	// age up rabbits , remove them if dead
-	//new way
+			// age up rabbits , remove them if dead
+			//new way
 	auto IsRabbitOld = [](const std::shared_ptr<Rabbit>& InRabbit)
 		{
 			return InRabbit->AgeUp();
@@ -293,12 +309,12 @@ void World::MoveCycleForward()
 				GetFirstNonRadioActive()->TurnRadioActive(false);
 		Infectors.clear();
 		*/
-	/// rabbit feed
-	// new way
+		/// rabbit feed
+		// new way
 	auto IsShortOnFood = [this](const std::shared_ptr<Rabbit>& InRabbit)
 		{
 			int GrassCost = InRabbit->GetRadioactive() ? 4 : 2;
-			if (GrassCount > GrassCost) 
+			if (GrassCount > GrassCost)
 			{
 				GrassCount -= GrassCost;
 				return false;
@@ -333,8 +349,8 @@ void World::MoveCycleForward()
 		{
 			if (!Rabbits[i]->GetIsMale())
 				if (Rabbits[i]->EligibleForBreeding()) {
-						std::shared_ptr<Rabbit> TempRabbit = std::make_shared<Rabbit>(Rabbits[i]->GetColor(), Rabbits[i]);
-						Rabbits.push_back(TempRabbit);
+					std::shared_ptr<Rabbit> TempRabbit = std::make_shared<Rabbit>(Rabbits[i]->GetColor(), Rabbits[i]);
+					Rabbits.push_back(TempRabbit);
 				}
 		}
 		// how to do this
