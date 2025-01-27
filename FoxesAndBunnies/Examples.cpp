@@ -5,7 +5,7 @@
 #include <numeric>
 #include <assert.h>
 #include <functional>
-
+#include "Vec.h"
 int Sum(int& v1, int& v2)
 {
 	return v1 + v2;
@@ -446,5 +446,70 @@ int main_examples_170924()
 	// multicast -> as many handlers as you  need; cannot return value
 	// dynamic -> can be bound to Blueprint functions
 
+	return 0;
+}
+
+
+int main()
+{
+	
+	Vec<int> IntVector;
+
+	/*
+	IntVector.reserve(100);
+	for (size_t i = 0; i < 119; i++)
+	{
+		IntVector.push_back(i);
+
+	}
+	std::cout << IntVector.size() << std::endl;
+	std::cout << IntVector.end() - IntVector.begin() << std::endl;
+	//IntVector.clear();
+	std::cout << IntVector.size() << std::endl;
+	std::cout << IntVector.end() - IntVector.begin() << std::endl;
+
+	for (size_t i = 0; i < 3; i++)
+	{
+		//std::cout << *(IntVector.end() - 1) << std::endl;
+		IntVector.pop_back();
+	}
+	std::cout << IntVector.size() << std::endl;
+	std::cout << IntVector.end() - IntVector.begin() << std::endl;
+	for (size_t i = 0; i < 3; i++)
+	{
+		IntVector.push_back(i);
+
+	}
+	std::cout << IntVector.size() << std::endl;
+	std::cout << IntVector.end() - IntVector.begin() << std::endl;
+	for (size_t i = 0; i < 129; i++)
+	{
+		IntVector.pop_back();
+	}
+
+	*/
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		IntVector.push_back(i);
+		std::cout << i << std::endl;
+	}
+	for (size_t i = 1; i < 7; i++)
+	{
+		IntVector.push_at(2, i*10);
+		std::cout << i << std::endl;
+	}
+	std::cout << "------" << std::endl;
+	for (auto it = IntVector.begin(); it < IntVector.end(); it++)
+	{
+		std::cout << *it << std::endl;
+	}
+	std::cout << "------" << std::endl;
+	IntVector.pop_at(2);
+	IntVector.pop_at(2);
+	for (auto it = IntVector.begin(); it < IntVector.end(); it++)
+	{
+		std::cout << *it << std::endl;
+	}
 	return 0;
 }
