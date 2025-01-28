@@ -151,7 +151,7 @@ int main_examples_0309()
 	{
 		std::cout << "Forgotten mom is no longer valid";
 	}
-	
+
 	return 0;
 }
 
@@ -275,7 +275,7 @@ void transform_if(
 	//std::back_insert_iterator<std::vector<TransformedType>> output,
 	//Predicate predicate,
 	//Transformer transformer
-	)
+)
 {
 	//for (; begin != end; begin++)
 	//{
@@ -452,43 +452,61 @@ int main_examples_170924()
 
 int main()
 {
-	
+
 	Vec<int> IntVector;
 
+
+
+
+
+	///////////////////
+	// test 1 : reserve push/pop
 	/*
 	IntVector.reserve(100);
+	std::cout << "pushing 119 elements" << std::endl;
 	for (size_t i = 0; i < 119; i++)
 	{
 		IntVector.push_back(i);
 
 	}
-	std::cout << IntVector.size() << std::endl;
-	std::cout << IntVector.end() - IntVector.begin() << std::endl;
-	//IntVector.clear();
-	std::cout << IntVector.size() << std::endl;
-	std::cout << IntVector.end() - IntVector.begin() << std::endl;
-
-	for (size_t i = 0; i < 3; i++)
-	{
-		//std::cout << *(IntVector.end() - 1) << std::endl;
-		IntVector.pop_back();
-	}
-	std::cout << IntVector.size() << std::endl;
-	std::cout << IntVector.end() - IntVector.begin() << std::endl;
-	for (size_t i = 0; i < 3; i++)
-	{
-		IntVector.push_back(i);
-
-	}
-	std::cout << IntVector.size() << std::endl;
-	std::cout << IntVector.end() - IntVector.begin() << std::endl;
+	std::cout << "popping 129 elements" << std::endl;
 	for (size_t i = 0; i < 129; i++)
 	{
 		IntVector.pop_back();
 	}
-
 	*/
 
+
+
+
+
+
+
+	///////////////////
+	// test 2 : unreserved push/pop
+	/*
+	std::cout << "pushing 119 elements" << std::endl;
+	for (size_t i = 0; i < 119; i++)
+	{
+		IntVector.push_back(i);
+
+	}
+	std::cout << "popping 129 elements" << std::endl;
+	for (size_t i = 0; i < 129; i++)
+	{
+		IntVector.pop_back();
+	}
+	*/
+
+
+
+
+
+
+
+	///////////////////
+	// test 3 : unreserved push/pop at
+	/*
 	for (size_t i = 0; i < 4; i++)
 	{
 		IntVector.push_back(i);
@@ -496,7 +514,7 @@ int main()
 	}
 	for (size_t i = 1; i < 7; i++)
 	{
-		IntVector.push_at(2, i*10);
+		IntVector.push_at(2, i * 10);
 		std::cout << i << std::endl;
 	}
 	std::cout << "------" << std::endl;
@@ -511,5 +529,88 @@ int main()
 	{
 		std::cout << *it << std::endl;
 	}
+	*/
+
+
+
+
+
+
+
+
+
+	///////////////////
+	// test 4 : reserved push/pop at
+	/*
+	IntVector.reserve(100);
+	for (size_t i = 0; i < 4; i++)
+	{
+		IntVector.push_back(i);
+		std::cout << i << std::endl;
+	}
+	for (size_t i = 1; i < 7; i++)
+	{
+		IntVector.push_at(2, i * 10);
+		std::cout << i << std::endl;
+	}
+	std::cout << "------" << std::endl;
+	for (auto it = IntVector.begin(); it < IntVector.end(); it++)
+	{
+		std::cout << *it << std::endl;
+	}
+	std::cout << "------" << std::endl;
+	IntVector.pop_at(2);
+	IntVector.pop_at(2);
+	for (auto it = IntVector.begin(); it < IntVector.end(); it++)
+	{
+		std::cout << *it << std::endl;
+	}
+	*/
+
+
+
+
+
+
+
+
+	///////////////////
+	// test 5 : reserved clear 
+	/*
+	std::cout << "pushing 119 elements" << std::endl;
+	for (size_t i = 0; i < 119; i++)
+	{
+		IntVector.push_back(i);
+
+	}
+	IntVector.clear();
+	*/
+
+
+
+
+
+
+
+
+
+	///////////////////
+	// test 6 : unreserved clear 
+	/*
+	IntVector.reserve(100);
+	std::cout << "pushing 119 elements" << std::endl;
+	for (size_t i = 0; i < 119; i++)
+	{
+		IntVector.push_back(i);
+
+	}
+	IntVector.clear();
+	*/
+
+
+
+
+
+
 	return 0;
 }
