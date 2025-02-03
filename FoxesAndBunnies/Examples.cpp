@@ -450,7 +450,7 @@ int main_examples_170924()
 }
 
 
-int main()
+int main_011()
 {
 
 	Vec<int> IntVector;
@@ -575,7 +575,7 @@ int main()
 
 
 	///////////////////
-	// test 5 : reserved clear 
+	// test 5 : unreserved clear 
 	/*
 	std::cout << "pushing 119 elements" << std::endl;
 	for (size_t i = 0; i < 119; i++)
@@ -595,7 +595,7 @@ int main()
 
 
 	///////////////////
-	// test 6 : unreserved clear 
+	// test 6 : reserved clear 
 	/*
 	IntVector.reserve(100);
 	std::cout << "pushing 119 elements" << std::endl;

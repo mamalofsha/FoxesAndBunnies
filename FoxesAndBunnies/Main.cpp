@@ -1,10 +1,6 @@
 #include <iostream>
-#include <string>
-#include <vector>
 #include <thread>
 #include <chrono>
-#include <cstdlib> 
-#include "NameStorage.h"
 #include "Rabbit.h"
 #include "World.h"
 #include "Tools.h"
@@ -13,7 +9,7 @@ bool SetupInput();
 void WorldCycle(World* InWorld);
 bool AutomaticWait;
 
-int main23()
+int main()
 {
 	World* CurrentWorld = new World(5, 500, 2);
 	Tools::LogUI("World Started !", ExampleColor::White);
