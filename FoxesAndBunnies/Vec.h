@@ -30,6 +30,7 @@ public:
     }
     ///
     void push_at(size_type index,const T& t) {
+        if (index > size()) return;
         if (avail == limit)
             grow();
         unchecked_append_at(index,t);
@@ -48,6 +49,7 @@ public:
     ///
     ///
     void pop_at(size_type index) {
+        if (index > size()) return;
         if (avail == data) return;
         unchecked_delete_at(index);
         if ((avail - data - 1) * 2 <= (limit - data - 1))

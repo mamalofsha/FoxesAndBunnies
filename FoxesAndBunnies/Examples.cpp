@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <functional>
 #include "Vec.h"
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 int Sum(int& v1, int& v2)
 {
 	return v1 + v2;
@@ -614,3 +616,75 @@ int main_011()
 
 	return 0;
 }
+
+
+
+TEST_CASE("Vec Test")
+{
+	Vec<int> IntVector;
+
+	SUBCASE("Checking push pop") {
+		std::cout << "Checking push pop" << std::endl;
+		IntVector.push_back(1);
+		REQUIRE(IntVector.size() == 1);
+		IntVector.pop_back();
+		REQUIRE(IntVector.size() == 0);
+	}
+
+	SUBCASE("Checking push at") {
+		
+		SUBCASE("Natural Numbers Input Domain [0,inf) ") 
+		{ 
+			SUBCASE("Natural Numbers outside vec length")
+			{
+				// REQUIRE(IntVector.size() == 0);
+				// true because the subcases dont matter and each one runs separately 
+
+				/// <summary>
+				///  found crash : using push at when the Vec is not that long
+				/// like using push_at(10,1) on an emtpy vec
+				/// </summary>
+				// x IntVector.push_at(1, 1);
+				IntVector.push_at(1, 1);
+				REQUIRE(IntVector.size() == 0);
+
+				IntVector.push_at(10, 1);
+				REQUIRE(IntVector.size() == 0);
+
+				IntVector.push_at(100, 1);
+				REQUIRE(IntVector.size() == 0);
+			}
+			SUBCASE("Natural Numbers inside vec length")
+			{
+
+				for (size_t i = 0; i < 10; i++)
+				{
+					IntVector.push_back(10);
+				}
+				IntVector.push_at(0, 1);
+				CHECK(IntVector.size() == 11);
+
+				IntVector.push_at(1, 1);
+				CHECK(IntVector.size() == 12);
+				IntVector.push_at(5, 1);
+				CHECK(IntVector.size() == 13);
+
+
+				IntVector.push_at(IntVector.size(), 1);
+				REQUIRE(IntVector.size() == 14);
+			}
+		}
+		SUBCASE("Negative Numbers Input Domain (-inf,-1] ")
+		{
+			IntVector.push_at(-1, 1);
+			REQUIRE(IntVector.size() == 0);
+		}
+
+	}
+
+}
+
+
+
+
+
