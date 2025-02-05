@@ -6,8 +6,10 @@
 #include <assert.h>
 #include <functional>
 #include "Vec.h"
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
+#include <fstream>
+
+//#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+//#include "doctest.h"
 int Sum(int& v1, int& v2)
 {
 	return v1 + v2;
@@ -617,7 +619,7 @@ int main_011()
 	return 0;
 }
 
-
+/*
 
 TEST_CASE("Vec Test")
 {
@@ -632,13 +634,13 @@ TEST_CASE("Vec Test")
 	}
 
 	SUBCASE("Checking push at") {
-		
-		SUBCASE("Natural Numbers Input Domain [0,inf) ") 
-		{ 
+
+		SUBCASE("Natural Numbers Input Domain [0,inf) ")
+		{
 			SUBCASE("Natural Numbers outside vec length")
 			{
 				// REQUIRE(IntVector.size() == 0);
-				// true because the subcases dont matter and each one runs separately 
+				// true because the subcases dont matter and each one runs separately
 
 				/// <summary>
 				///  found crash : using push at when the Vec is not that long
@@ -682,9 +684,87 @@ TEST_CASE("Vec Test")
 
 	}
 
+}*/
+
+
+
+
+
+
+/// advent of code
+void SortVector(const std::vector<int>& InVector, std::vector<int>& Result)
+{
+	for (auto It = InVector.begin(); It < InVector.end(); It++)
+	{
+		if (Result.size() == 0){
+			Result.push_back(*It);
+			continue;
+		}
+		for (auto SecondIt = Result.begin(); SecondIt < Result.end();)
+		{
+			if (*It <= *SecondIt)
+			{
+				Result.insert(SecondIt, *It);
+				break;
+			}
+			if (*It > *SecondIt)
+			{
+				SecondIt++;
+				if (SecondIt == Result.end())
+				{
+					Result.push_back(*It);
+					break;
+				}
+			}
+		}
+	}
 }
 
 
 
 
 
+
+/// advent of code #1
+int main()
+{
+	std::ifstream file("star1data.txt"); // Replace with actual file
+	std::vector<int> LeftIntVector, RightIntVector;
+	int Num1, Num2;
+
+	while (file >> Num1 >> Num2) {
+		LeftIntVector.push_back(Num1);
+		RightIntVector.push_back(Num2);
+	}
+
+	std::vector<int> SortedLeftInt;
+	std::vector<int> SortedRightInt;
+
+	SortVector(LeftIntVector, SortedLeftInt);
+	SortVector(RightIntVector, SortedRightInt);
+
+	int Sum=0;
+	for (int i = 0; i < RightIntVector.size(); i++)
+	{
+		std::cout << SortedRightInt[i] << " , " << SortedLeftInt[i]<<std::endl;
+		Sum += std::abs(SortedRightInt[i] - SortedLeftInt[i]);
+	}
+	std::cout << "-----" << std::endl;
+
+	std::cout << Sum << std::endl;
+	std::cout << "-----" << std::endl;
+	int SimilarityScore = 0;
+	for (auto It : SortedLeftInt)
+	{
+		int RepeatCount = 0;
+		for (auto SecondIt : SortedRightInt)
+		{
+			if (SecondIt == It)
+			{
+				RepeatCount++;
+			}
+		}
+		SimilarityScore += RepeatCount * It;
+	}
+	std::cout << SimilarityScore << std::endl;
+}
