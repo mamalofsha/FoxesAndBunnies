@@ -7,6 +7,7 @@
 #include <functional>
 #include "Vec.h"
 #include <fstream>
+#include <sstream>
 
 //#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 //#include "doctest.h"
@@ -696,7 +697,7 @@ void SortVector(const std::vector<int>& InVector, std::vector<int>& Result)
 {
 	for (auto It = InVector.begin(); It < InVector.end(); It++)
 	{
-		if (Result.size() == 0){
+		if (Result.size() == 0) {
 			Result.push_back(*It);
 			continue;
 		}
@@ -726,7 +727,7 @@ void SortVector(const std::vector<int>& InVector, std::vector<int>& Result)
 
 
 /// advent of code #1
-int main()
+int main11()
 {
 	std::ifstream file("star1data.txt"); // Replace with actual file
 	std::vector<int> LeftIntVector, RightIntVector;
@@ -743,10 +744,10 @@ int main()
 	SortVector(LeftIntVector, SortedLeftInt);
 	SortVector(RightIntVector, SortedRightInt);
 
-	int Sum=0;
+	int Sum = 0;
 	for (int i = 0; i < RightIntVector.size(); i++)
 	{
-		std::cout << SortedRightInt[i] << " , " << SortedLeftInt[i]<<std::endl;
+		std::cout << SortedRightInt[i] << " , " << SortedLeftInt[i] << std::endl;
 		Sum += std::abs(SortedRightInt[i] - SortedLeftInt[i]);
 	}
 	std::cout << "-----" << std::endl;
@@ -767,4 +768,110 @@ int main()
 		SimilarityScore += RepeatCount * It;
 	}
 	std::cout << SimilarityScore << std::endl;
+	return 0;
+}
+
+typedef std::ifstream ifstream;
+typedef std::string string;
+
+bool EvaluateReport(const string& InLine)
+{
+	std::stringstream Stream(InLine);
+	int Num;
+	int LastNum = 0;
+	int UnsafeIndex = -1;
+	int Direction = 0; // -1 0 1 
+	while (Stream >> Num) {
+		if (LastNum == 0)
+		{
+			LastNum = Num;
+		}
+		else
+		{
+			if (std::abs(Num - LastNum) >= 1 && std::abs(Num - LastNum) <= 3)
+			{
+				if (Direction == 0)
+				{
+					Direction = (Num - LastNum) > 0 ? 1 : -1;
+				}
+				else
+				{
+					if (Direction != ((Num - LastNum) > 0 ? 1 : -1))
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				return false;
+			}
+			LastNum = Num;
+		}
+	}
+	return true;
+}
+bool SafeEvaluateReport(const string& InLine)
+{
+	std::stringstream Stream(InLine);
+	std::vector<int> Numbers;
+	int Num;
+	int LastNum = 0;
+	int UnsafeIndex = -1;
+	int Direction = 0; // -1 0 1 
+	while (Stream >> Num)
+	{
+		Numbers.push_back(Num);
+	}
+	for (size_t i = 0; i < Numbers.size(); i++)
+	{
+		std::vector<int> TempNumbers = Numbers;
+		TempNumbers.erase(TempNumbers.begin() + i);
+		std::ostringstream oss;
+		for (size_t i = 0; i < TempNumbers.size(); ++i) {
+			if (i > 0) oss << " ";  // Add space before every element except the first
+			oss << TempNumbers[i];
+		}
+		if (EvaluateReport(oss.str()))
+			return true;
+	}
+	return false;
+}
+
+/// advent of code #2
+int main_01()
+{
+	// Create an input file stream object named 'file' and
+   // open the file "GFG.txt".
+	ifstream File("star2data.txt");
+
+	// String to store each line of the file.
+	string Line;
+	int SafeReports = 0;
+	if (File.is_open()) {
+		// Read each line from the file and store it in the
+		// 'line' variable.
+		while (getline(File, Line)) {
+			if (EvaluateReport(Line))
+			{
+				SafeReports++;
+			}
+			else
+			{
+				if (SafeEvaluateReport(Line))
+					SafeReports++;
+			}
+		}
+
+		// Close the file stream once all lines have been
+		// read.
+		File.close();
+	}
+	else {
+		// Print an error message to the standard error
+		// stream if the file cannot be opened.
+		std::cerr << "Unable to open file!" << std::endl;
+	}
+	std::cout << SafeReports;
+	return 0;
 }
