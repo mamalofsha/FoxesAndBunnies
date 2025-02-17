@@ -11,7 +11,7 @@ bool SetupInput();
 void WorldCycle(World* InWorld);
 bool AutomaticWait;
 
-int main()
+int main01()
 {
 	World* CurrentWorld = new World(5, 500, 2);
 	Tools::LogUI("World Started !", ExampleColor::White);

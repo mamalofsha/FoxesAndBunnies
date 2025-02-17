@@ -8,6 +8,7 @@
 #include "Vec.h"
 #include <fstream>
 #include <sstream>
+#include <regex>
 
 //#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 //#include "doctest.h"
@@ -724,7 +725,7 @@ void SortVector(const std::vector<int>& InVector, std::vector<int>& Result)
 
 
 
-
+// algo sort \ accumulate
 
 /// advent of code #1
 int main11()
@@ -796,6 +797,7 @@ bool EvaluateReport(const string& InLine)
 				}
 				else
 				{
+					// just get sign and use that for +-
 					if (Direction != ((Num - LastNum) > 0 ? 1 : -1))
 					{
 						return false;
@@ -873,5 +875,553 @@ int main_01()
 		std::cerr << "Unable to open file!" << std::endl;
 	}
 	std::cout << SafeReports;
+	return 0;
+}
+
+
+std::string ReadFileConvertToString(const std::string& FileName)
+{
+	std::ifstream file(FileName); // Replace with actual file
+	std::stringstream StringStream;
+	StringStream << file.rdbuf(); // Read file content into buffer
+	return StringStream.str();
+}
+
+std::vector<int> FindOccurances(const std::string& Data, const std::string& SearchCase)
+{
+	std::vector<int> Output;
+	int res = -1;
+	while ((res = Data.find(SearchCase, res + 1)) != string::npos)
+	{
+		Output.push_back(res);
+	}
+	return Output;
+}
+
+bool Is_Number(const std::string& s) {
+	static const std::regex number_regex(
+		R"(^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$)"
+	);
+	return std::regex_match(s, number_regex);
+}
+
+
+std::vector<std::pair<int, int>> ProcessOccurances(const std::string& Data, const std::vector<int>& Occurances)
+{
+	std::vector<std::pair<int, int>> Output;
+
+	for (const auto& Num : Occurances)
+	{
+		std::string TempStr;
+		TempStr.push_back(Data[Num + 4]);
+		std::string TempStr2;
+		int Ints = 0;
+		if (!Is_Number(TempStr))
+		{
+			continue;
+		}
+		while (Is_Number(TempStr))
+		{
+			Ints++;
+			TempStr.push_back(Data[Num + 4 + Ints]);
+		}
+		if (Data[Num + 4 + Ints] == ',')
+		{
+			Ints++;
+			TempStr2.push_back(Data[Num + 4 + Ints]);
+			if (!Is_Number(TempStr2))
+			{
+				continue;
+			}
+			while (Is_Number(TempStr2))
+			{
+				Ints++;
+				TempStr2.push_back(Data[Num + 4 + Ints]);
+			}
+			if (Data[Num + 4 + Ints] == ')')
+			{
+				std::cout << "numsec" << TempStr2 << std::endl;
+				Output.emplace_back(stoi(TempStr), stoi(TempStr2));
+			}
+
+		}
+		else
+		{
+			continue;
+		}
+		std::cout << "num" << TempStr << std::endl;
+		std::cout << "sepa " << Data[Num + 4 + Ints] << std::endl;
+	}
+	return Output;
+}
+
+/// advent of code #3
+int main0111()
+{
+	std::string Text = ReadFileConvertToString("star3data.txt");
+	std::vector<int> Occurances = FindOccurances(Text, "mul(");
+	for (const auto& Num : Occurances)
+	{
+		std::cout << Num << ",";
+	}
+	std::vector<std::pair<int, int>> ProcessedData = ProcessOccurances(Text, Occurances);
+	std::cout << "------------------";
+	std::cout << std::endl;
+	for (const auto& Num : ProcessedData)
+	{
+		std::cout << std::get<0>(Num) << ",";
+		std::cout << std::get<1>(Num);
+		std::cout << std::endl;
+	}
+
+
+	// Using std::accumulate with a lambda function
+	int result = std::accumulate(ProcessedData.begin(), ProcessedData.end(), 0,
+		[](int sum, const std::pair<int, int>& p) {
+			return sum + (p.first * p.second); // Multiply each tuple and accumulate
+		});
+
+	std::cout << "Result: " << result << std::endl; // Output: 138
+	std::cout << "------------------" << std::endl;
+
+
+
+	std::vector<int> DontOccurances = FindOccurances(Text, "don't()");
+	std::vector<int> DoOccurances = FindOccurances(Text, "do()");
+	std::vector<std::pair<int, int>> AcceptableRange;
+	AcceptableRange.emplace_back(0, DontOccurances[0] + 1);
+	for (const auto& Num : DontOccurances)
+	{
+		std::cout << (Num) << ",";
+	}
+	std::cout << std::endl;
+	for (const auto& Num : DoOccurances)
+	{
+		std::cout << (Num) << ",";
+	}
+	std::cout << "------------------" << std::endl;
+	for (const auto& Num : DoOccurances)
+	{
+		std::cout << (Num) << ",";
+		if (Num < AcceptableRange[0].second) continue;
+		bool HasMatch = false;
+		for (const auto& Num2 : DontOccurances)
+		{
+			if (Num2 > Num)
+			{
+				bool Break = false;
+				for (const auto& Range : AcceptableRange)
+				{
+					if (Range.second == Num2)
+					{
+						Break = true;
+						break;
+					}
+				}
+				if (!Break)
+				{
+					HasMatch = true;
+					AcceptableRange.emplace_back(Num + 1, Num2 + 1);
+				}
+				break;
+			}
+		}
+		if (HasMatch) continue;
+		AcceptableRange.emplace_back(Num + 1, Text.size());
+
+	}
+	std::cout << std::endl;
+	std::cout << "------------------" << std::endl;
+	for (const auto& pair : AcceptableRange)
+	{
+		std::cout << pair.first << "," << pair.second << std::endl;
+	}
+	std::vector<int> SecondPartOccurances = FindOccurances(Text, "mul(");
+	std::vector<int> FinalOccurances;
+
+	for (const auto& Num : SecondPartOccurances)
+	{
+		for (const auto& pair : AcceptableRange)
+		{
+			if (Num > pair.first && Num < pair.second)
+			{
+				FinalOccurances.push_back(Num);
+				std::cout << " + " << pair.first << ", " << Num << " ," << pair.second << std::endl;
+				break;
+			}
+		}
+	}
+	std::cout << SecondPartOccurances.size() << ".," << FinalOccurances.size();
+
+	std::vector<std::pair<int, int>> Part2ProcessedData = ProcessOccurances(Text, FinalOccurances);
+	std::cout << "------------------";
+	std::cout << std::endl;
+
+
+	// Using std::accumulate with a lambda function
+	int part2result = std::accumulate(Part2ProcessedData.begin(), Part2ProcessedData.end(), 0,
+		[](int sum, const std::pair<int, int>& p) {
+			return sum + (p.first * p.second); // Multiply each tuple and accumulate
+		});
+
+	std::cout << "Result: " << part2result << std::endl; // Output: 138
+	std::cout << "------------------" << std::endl;
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// advent of code #4
+struct XData
+{
+	int Line=0;
+	int Index=0;
+	bool CanGrowRight=false;
+	bool CanGrowUp=false;
+	bool CanGrowLeft=false;
+	bool CanGrowDown=false;
+};
+
+
+int ProcessXmasOccurances(const std::vector<string>& InLines, const std::vector<XData>& InputXData, const string& SearchCase)
+{
+	int XMasOccurances = 0;
+	string Remaining = SearchCase;
+
+	for (const auto& CurrentXData : InputXData)
+	{
+		if (CurrentXData.CanGrowRight)
+		{
+			bool FoundCase = true;
+			for (int i = 0; i < 3; i++)
+			{
+				//std::cout << Remaining[i] << "," << InLines[CurrentXData.Line][CurrentXData.Index + i ] << std::endl;
+				//std::cout << Remaining[i] << ","; 
+				//std::cout << InLines[CurrentXData.Line][CurrentXData.Index + i + 1] << ",";
+
+				if (InLines[CurrentXData.Line][CurrentXData.Index + i + 1] != Remaining[i])
+				{
+					FoundCase = false;
+					break;
+				}
+			}
+			if (FoundCase)
+			{
+				XMasOccurances++;
+			}
+		}
+		if (CurrentXData.CanGrowLeft)
+		{
+			bool FoundCase = true;
+			for (int i = 0; i < 3; i++)
+			{
+				//std::cout << Remaining[i] << "," << InLines[CurrentXData.Line][CurrentXData.Index + i ] << std::endl;
+				//std::cout << Remaining[i] << ","; 
+				//std::cout << InLines[CurrentXData.Line][CurrentXData.Index + i + 1] << ",";
+				if (InLines[CurrentXData.Line][CurrentXData.Index - i - 1] != Remaining[i])
+				{
+					FoundCase = false;
+					break;
+				}
+			}
+			if (FoundCase)
+			{
+				XMasOccurances++;
+			}
+		}
+		if (CurrentXData.CanGrowUp)
+		{
+			bool FoundCase = true;
+			for (int i = 0; i < 3; i++)
+			{
+				//std::cout << Remaining[i] << "," << InLines[CurrentXData.Line][CurrentXData.Index + i ] << std::endl;
+				//std::cout << Remaining[i] << ","; 
+				//std::cout << InLines[CurrentXData.Line][CurrentXData.Index + i + 1] << ",";
+				if (InLines[CurrentXData.Line - i - 1][CurrentXData.Index] != Remaining[i])
+				{
+					FoundCase = false;
+					break;
+				}
+			}
+			if (FoundCase)
+			{
+				XMasOccurances++;
+			}
+		}
+		if (CurrentXData.CanGrowDown)
+		{
+			bool FoundCase = true;
+			for (int i = 0; i < 3; i++)
+			{
+				//std::cout << Remaining[i] << "," << InLines[CurrentXData.Line][CurrentXData.Index + i ] << std::endl;
+				//std::cout << Remaining[i] << ","; 
+				//std::cout << InLines[CurrentXData.Line][CurrentXData.Index + i + 1] << ",";
+				if (InLines[CurrentXData.Line + i + 1][CurrentXData.Index] != Remaining[i])
+				{
+					FoundCase = false;
+					break;
+				}
+			}
+			if (FoundCase)
+			{
+				XMasOccurances++;
+			}
+		}
+		if (CurrentXData.CanGrowRight && CurrentXData.CanGrowUp)
+		{
+			bool FoundCase = true;
+			for (int i = 0; i < 3; i++)
+			{
+				//std::cout << Remaining[i] << "," << InLines[CurrentXData.Line][CurrentXData.Index + i ] << std::endl;
+				//std::cout << Remaining[i] << ","; 
+				//std::cout << InLines[CurrentXData.Line][CurrentXData.Index + i + 1] << ",";
+				if (InLines[CurrentXData.Line - i - 1][CurrentXData.Index + i + 1] != Remaining[i])
+				{
+					FoundCase = false;
+					break;
+				}
+			}
+			if (FoundCase)
+			{
+				XMasOccurances++;
+			}
+		}
+		if (CurrentXData.CanGrowRight && CurrentXData.CanGrowDown)
+		{
+			bool FoundCase = true;
+			for (int i = 0; i < 3; i++)
+			{
+				//std::cout << Remaining[i] << "," << InLines[CurrentXData.Line][CurrentXData.Index + i ] << std::endl;
+				//std::cout << Remaining[i] << ","; 
+				//std::cout << InLines[CurrentXData.Line][CurrentXData.Index + i + 1] << ",";
+				if (InLines[CurrentXData.Line + i + 1][CurrentXData.Index + i + 1] != Remaining[i])
+				{
+					FoundCase = false;
+					break;
+				}
+			}
+			if (FoundCase)
+			{
+				XMasOccurances++;
+			}
+		}
+		if (CurrentXData.CanGrowLeft && CurrentXData.CanGrowUp)
+		{
+			bool FoundCase = true;
+			for (int i = 0; i < 3; i++)
+			{
+				//std::cout << Remaining[i] << "," << InLines[CurrentXData.Line][CurrentXData.Index + i ] << std::endl;
+				//std::cout << Remaining[i] << ","; 
+				//std::cout << InLines[CurrentXData.Line][CurrentXData.Index + i + 1] << ",";
+				if (InLines[CurrentXData.Line - i - 1][CurrentXData.Index - i - 1] != Remaining[i])
+				{
+					FoundCase = false;
+					break;
+				}
+			}
+			if (FoundCase)
+			{
+				XMasOccurances++;
+			}
+		}
+		if (CurrentXData.CanGrowLeft && CurrentXData.CanGrowDown)
+		{
+			bool FoundCase = true;
+			for (int i = 0; i < 3; i++)
+			{
+				//std::cout << Remaining[i] << "," << InLines[CurrentXData.Line][CurrentXData.Index + i ] << std::endl;
+				//std::cout << Remaining[i] << ","; 
+				//std::cout << InLines[CurrentXData.Line][CurrentXData.Index + i + 1] << ",";
+				if (InLines[CurrentXData.Line + i + 1][CurrentXData.Index - i - 1] != Remaining[i])
+				{
+					FoundCase = false;
+					break;
+				}
+			}
+			if (FoundCase)
+			{
+				XMasOccurances++;
+			}
+		}
+	}
+
+	return XMasOccurances;
+}
+
+
+int ProcessXXmasOccurances(const std::vector<string>& InLines, const std::vector<XData>& InputXData)
+{
+	int XMasOccurances = 0;
+	for (const auto& CurrentXData : InputXData)
+	{
+		if (!CurrentXData.CanGrowDown || !CurrentXData.CanGrowLeft || !CurrentXData.CanGrowRight || !CurrentXData.CanGrowUp)
+		{
+			continue;
+		}
+		bool FoundCase = true;
+		std::vector<char> Chars = { 'M','S' };
+		std::vector<char> FirstSetChars;
+		std::vector<char> SecondSetChars;
+		for (int i = -1; i < 2; i++)
+		{
+			if (i == 0 )continue;
+			for (int j = -1; j < 2; j++)
+			{
+				if (j == 0)continue;
+				if (i+j != 0)
+				{
+					FirstSetChars.push_back(InLines[CurrentXData.Line +i][CurrentXData.Index + j]);
+				}
+				else
+				{
+					SecondSetChars.push_back(InLines[CurrentXData.Line + i][CurrentXData.Index + j]);
+				}
+			}
+		}
+		if (FirstSetChars[1] == Chars[0] || FirstSetChars[0] == Chars[0])
+		{
+			Chars.erase(Chars.begin());
+		}
+		if (FirstSetChars[1] == Chars[0] || FirstSetChars[0] == Chars[0])
+		{
+			Chars.erase(Chars.begin());
+		}
+		if (Chars.size() > 0)
+		{
+			continue;
+		}
+		Chars = { 'M','S' };
+		if (SecondSetChars[1] == Chars[0] || SecondSetChars[0] == Chars[0])
+		{
+			Chars.erase(Chars.begin());
+		}
+		if (SecondSetChars[1] == Chars[0] || SecondSetChars[0] == Chars[0])
+		{
+			Chars.erase(Chars.begin());
+		}
+		if (Chars.size() > 0)
+		{
+			continue;
+		}
+		XMasOccurances++;
+	}
+	return XMasOccurances;
+}
+
+int main()
+{
+	ifstream File("star4data.txt");
+	string FullFileText = ReadFileConvertToString("star4data.txt");
+	// String to store each line of the file.
+	string Line;
+	int LineCount=0;
+	int LineLength = 0;
+	std::vector<string> Lines;
+	if (File.is_open()) {
+		// Read each line from the file and store it in the
+		// 'line' variable.
+		
+		while (getline(File, Line)) {
+			LineCount++;
+			Lines.push_back(Line);
+			if(LineLength ==0)
+			{ 
+				LineLength = Line.length();
+			}
+		}
+		// Close the file stream once all lines have been
+		// read.
+		File.close();
+	}
+	std::cout << LineCount << "," << LineLength << std::endl;
+
+	for (const auto& Line :Lines)
+	{
+		std::vector<int> Occurances = FindOccurances(Line, "X");
+		for (const auto& Occur : Occurances)
+		{
+			std::cout << Occur << ",";
+
+		}
+	}
+	std::vector<XData> XDatas;
+	for (size_t i = 0; i < Lines.size(); i++)
+	{
+		std::vector<int> Occurances = FindOccurances(Lines[i], "X");
+		std::cout << std::endl;
+		for (const auto& LineOccur : Occurances)
+		{
+			std::cout << "Line: " << i << ",Index= " << LineOccur << "||";
+			XData Data;
+			Data.Line = i;
+			Data.Index = LineOccur;
+			if (i > 2)
+			{
+				Data.CanGrowUp = true;
+			}
+			if (i < LineLength - 3)
+			{
+				Data.CanGrowDown = true;
+			}
+			if (LineOccur > 2)
+			{
+				Data.CanGrowLeft = true;
+			}
+			if (LineOccur < LineLength - 3)
+			{
+				Data.CanGrowRight = true;
+			}
+			XDatas.push_back(Data);
+		}
+	}
+
+	int FinalAnswer = ProcessXmasOccurances(Lines, XDatas,"MAS");
+
+	std::vector<XData> SecondXDatas;
+	for (size_t i = 0; i < Lines.size(); i++)
+	{
+		std::vector<int> Occurances = FindOccurances(Lines[i], "A");
+		std::cout << std::endl;
+		for (const auto& LineOccur : Occurances)
+		{
+			std::cout << "Line: " << i << ",Index= " << LineOccur << "||";
+			XData Data;
+			Data.Line = i;
+			Data.Index = LineOccur;
+			if (i > 0)
+			{
+				Data.CanGrowUp = true;
+			}
+			if (i < LineLength - 1)
+			{
+				Data.CanGrowDown = true;
+			}
+			if (LineOccur > 0)
+			{
+				Data.CanGrowLeft = true;
+			}
+			if (LineOccur < LineLength - 1)
+			{
+				Data.CanGrowRight = true;
+			}
+			SecondXDatas.push_back(Data);
+		}
+	}
+	int SecFinalAnswer = ProcessXXmasOccurances(Lines, SecondXDatas);
+
+	std::cout << std::endl << "sec Final Answer : " << SecFinalAnswer;
 	return 0;
 }
