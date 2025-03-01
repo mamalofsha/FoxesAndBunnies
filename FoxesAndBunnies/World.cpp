@@ -419,3 +419,8 @@ void World::MoveCycleForward()
 			Tools::LogUI(Rabbits[i]->GetFirstName() + " " + Rabbits[i]->GetLastName() + " " + std::to_string(Rabbits[i]->GetAge()) + " With Color of :" + ColorInfo + (Rabbits[i]->GetRadioactive() ? " RadioActive " : " Non RadioActive "), ExampleColor::White);
 	}
 }
+
+
+
+
+

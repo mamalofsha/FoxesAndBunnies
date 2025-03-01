@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <regex>
+#include <map>
 
 //#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 //#include "doctest.h"
@@ -902,6 +903,7 @@ bool Is_Number(const std::string& s) {
 	static const std::regex number_regex(
 		R"(^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$)"
 	);
+
 	return std::regex_match(s, number_regex);
 }
 
@@ -938,6 +940,7 @@ std::vector<std::pair<int, int>> ProcessOccurances(const std::string& Data, cons
 				Ints++;
 				TempStr2.push_back(Data[Num + 4 + Ints]);
 			}
+			// avoid just 4 - it's a magic variable 
 			if (Data[Num + 4 + Ints] == ')')
 			{
 				std::cout << "numsec" << TempStr2 << std::endl;
@@ -1087,12 +1090,12 @@ int main0111()
 /// advent of code #4
 struct XData
 {
-	int Line=0;
-	int Index=0;
-	bool CanGrowRight=false;
-	bool CanGrowUp=false;
-	bool CanGrowLeft=false;
-	bool CanGrowDown=false;
+	int Line = 0;
+	int Index = 0;
+	bool CanGrowRight = false;
+	bool CanGrowUp = false;
+	bool CanGrowLeft = false;
+	bool CanGrowDown = false;
 };
 
 
@@ -1277,13 +1280,13 @@ int ProcessXXmasOccurances(const std::vector<string>& InLines, const std::vector
 		std::vector<char> SecondSetChars;
 		for (int i = -1; i < 2; i++)
 		{
-			if (i == 0 )continue;
+			if (i == 0)continue;
 			for (int j = -1; j < 2; j++)
 			{
 				if (j == 0)continue;
-				if (i+j != 0)
+				if (i + j != 0)
 				{
-					FirstSetChars.push_back(InLines[CurrentXData.Line +i][CurrentXData.Index + j]);
+					FirstSetChars.push_back(InLines[CurrentXData.Line + i][CurrentXData.Index + j]);
 				}
 				else
 				{
@@ -1321,24 +1324,24 @@ int ProcessXXmasOccurances(const std::vector<string>& InLines, const std::vector
 	return XMasOccurances;
 }
 
-int main()
+int main001()
 {
 	ifstream File("star4data.txt");
 	string FullFileText = ReadFileConvertToString("star4data.txt");
 	// String to store each line of the file.
 	string Line;
-	int LineCount=0;
+	int LineCount = 0;
 	int LineLength = 0;
 	std::vector<string> Lines;
 	if (File.is_open()) {
 		// Read each line from the file and store it in the
 		// 'line' variable.
-		
+
 		while (getline(File, Line)) {
 			LineCount++;
 			Lines.push_back(Line);
-			if(LineLength ==0)
-			{ 
+			if (LineLength == 0)
+			{
 				LineLength = Line.length();
 			}
 		}
@@ -1348,7 +1351,7 @@ int main()
 	}
 	std::cout << LineCount << "," << LineLength << std::endl;
 
-	for (const auto& Line :Lines)
+	for (const auto& Line : Lines)
 	{
 		std::vector<int> Occurances = FindOccurances(Line, "X");
 		for (const auto& Occur : Occurances)
@@ -1388,7 +1391,7 @@ int main()
 		}
 	}
 
-	int FinalAnswer = ProcessXmasOccurances(Lines, XDatas,"MAS");
+	int FinalAnswer = ProcessXmasOccurances(Lines, XDatas, "MAS");
 
 	std::vector<XData> SecondXDatas;
 	for (size_t i = 0; i < Lines.size(); i++)
@@ -1423,5 +1426,235 @@ int main()
 	int SecFinalAnswer = ProcessXXmasOccurances(Lines, SecondXDatas);
 
 	std::cout << std::endl << "sec Final Answer : " << SecFinalAnswer;
+	return 0;
+}
+
+
+
+
+/// advent of code #5
+
+struct PrinterNumberData
+{
+	std::vector<int> Biggers;
+	std::vector<int> Smallers;
+};
+
+int RegexProcessFirstOccurance(const string& InData, const string& InPattern)
+{
+	static const std::regex Pattern(InPattern);
+
+	auto Begin = std::sregex_iterator{ InData.begin(), InData.end(), Pattern };
+	auto End = std::sregex_iterator();
+
+	for (std::sregex_iterator i = Begin; i != End; ++i)
+	{
+		return i->position();
+	}
+}
+
+std::vector<int> RegexProcessAllOccurance(const string& InData, const string& InPattern)
+{
+	std::vector<int> Output;
+	const std::regex Pattern(InPattern);
+	auto Begin = std::sregex_iterator{ InData.begin(), InData.end(), Pattern };
+	auto End = std::sregex_iterator();
+	for (std::sregex_iterator i = Begin; i != End; ++i)
+	{
+		Output.push_back(i->position());
+	}
+	return Output;
+}
+
+void ConstructPrinterData(const string& InText, std::map<int, PrinterNumberData>& InDataMap)
+{
+	string Separator = R"(\|)";
+	string End = R"(\d\n)";
+	string Number = R"(\d+)";
+
+	std::vector<int> Separators = RegexProcessAllOccurance(InText, Separator);
+	std::vector<int> Numbers = RegexProcessAllOccurance(InText, Number);
+	std::vector<int> Ends = RegexProcessAllOccurance(InText, End);
+
+	for (int i = 0; i < Separators.size(); i++)
+	{
+		int FirstNumber = std::stoi(InText.substr(Numbers[i * 2], Separators[i]));
+		int SecondNumber = std::stoi(InText.substr(Numbers[(i * 2) + 1], Ends[i]));
+		PrinterNumberData PrinterData = PrinterNumberData();
+		//
+		std::map<int, PrinterNumberData>::iterator LeftIterator = InDataMap.find(FirstNumber);
+		if (LeftIterator != InDataMap.end())
+		{
+			//element found;
+			PrinterData = LeftIterator->second;
+			if (std::find(PrinterData.Biggers.begin(), PrinterData.Biggers.end(), SecondNumber) != PrinterData.Biggers.end()) {
+				/* v contains x */
+			}
+			else {
+				/* v does not contain x */
+				PrinterData.Biggers.push_back(SecondNumber);
+			}
+			InDataMap[FirstNumber] = PrinterData;
+		}
+		else
+		{
+			PrinterData.Biggers.push_back(SecondNumber);
+			InDataMap[FirstNumber] = PrinterData;
+		}
+		//
+		std::map<int, PrinterNumberData>::iterator RightIterator = InDataMap.find(SecondNumber);
+		if (RightIterator != InDataMap.end())
+		{
+			//element found;
+			PrinterData = RightIterator->second;
+			if (std::find(PrinterData.Smallers.begin(), PrinterData.Smallers.end(), FirstNumber) != PrinterData.Smallers.end()) {
+				/* v contains x */
+			}
+			else {
+				/* v does not contain x */
+				PrinterData.Smallers.push_back(FirstNumber);
+			}
+			InDataMap[SecondNumber] = PrinterData;
+		}
+		else
+		{
+			PrinterData = PrinterNumberData();
+			PrinterData.Smallers.push_back(FirstNumber);
+			InDataMap[SecondNumber] = PrinterData;
+		}
+	}
+
+}
+
+bool EvaluateRules(const std::vector<int>& InNumbers, std::map<int, PrinterNumberData>& InMap)
+{
+	for (int i = 0; i < InNumbers.size(); i++)
+	{
+		PrinterNumberData PrinterData;
+		std::map<int, PrinterNumberData>::iterator Iterator = InMap.find(InNumbers[i]);
+		if (Iterator != InMap.end())
+		{
+			//element found;
+			PrinterData = Iterator->second;
+		}
+		for (int j = 0; j < i; j++)
+		{
+			if (std::find(PrinterData.Smallers.begin(), PrinterData.Smallers.end(), InNumbers[j]) != PrinterData.Smallers.end()) {
+				/* v contains x */
+			}
+			else {
+				/* v does not contain x */
+				return false;
+			}
+		}
+		if (i < InNumbers.size() - 1)
+			for (int k = i + 1; k < InNumbers.size() - 1; k++)
+			{
+				if (std::find(PrinterData.Biggers.begin(), PrinterData.Biggers.end(), InNumbers[k]) != PrinterData.Biggers.end()) {
+					/* v contains x */
+				}
+				else {
+					/* v does not contain x */
+					return false;
+				}
+			}
+	}
+	return true;
+}
+
+
+int FixTheLine(std::vector<int> InNumbers, std::map<int, PrinterNumberData>& InMap)
+{
+	while (!EvaluateRules(InNumbers, InMap))
+	{
+		for (int i = 0; i < InNumbers.size(); i++)
+		{
+			PrinterNumberData PrinterData;
+			std::map<int, PrinterNumberData>::iterator Iterator = InMap.find(InNumbers[i]);
+			if (Iterator != InMap.end())
+			{
+				//element found;
+				PrinterData = Iterator->second;
+			}
+			for (int j = 0; j < i; j++)
+			{
+				if (std::find(PrinterData.Smallers.begin(), PrinterData.Smallers.end(), InNumbers[j]) != PrinterData.Smallers.end()) {
+					/* v contains x */
+				}
+				else {
+					/* v does not contain x */
+					int Temp = InNumbers[i];
+					InNumbers[i] = InNumbers[j];
+					InNumbers[j] = Temp;
+					//j = 0;
+					continue;
+				}
+			}
+			if (i < InNumbers.size() - 1)
+				for (int k = i + 1; k < InNumbers.size() - 1; k++)
+				{
+					if (std::find(PrinterData.Biggers.begin(), PrinterData.Biggers.end(), InNumbers[k]) != PrinterData.Biggers.end()) {
+						/* v contains x */
+					}
+					else {
+						/* v does not contain x */
+						int Temp = InNumbers[i];
+						InNumbers[i] = InNumbers[k];
+						InNumbers[k] = Temp;
+						//k = 0;
+						continue;
+					}
+				}
+		}
+	}
+	int x = InNumbers.size() / 2;
+	return InNumbers[x];
+}
+
+std::pair<int, int> CalculateResults(const string& InData, std::map<int, PrinterNumberData>& InMap)
+{
+	std::pair<int, int> Result = { 0,0 };
+	std::istringstream iss(InData);
+	std::string line;
+	while (std::getline(iss, line))
+	{
+		// Do something with `line`
+		std::stringstream StringStream(line);
+		int Num;
+		string t;
+		// Delimiter
+		char del = ',';
+		// Splitting the str string by delimiter
+		std::vector<int> Numbers;
+		while (std::getline(StringStream, t, del))
+		{
+			std::cout << "\"" << t << "\"" << " ";
+			Numbers.push_back(std::stoi(t));
+		}
+		std::cout << std::endl;
+		if (EvaluateRules(Numbers, InMap))
+		{
+			int x = Numbers.size() / 2;
+			Result.first += Numbers[x];
+		}
+		else
+		{
+			Result.second += FixTheLine(Numbers, InMap);
+		}
+	}
+	return Result;
+}
+
+
+int main()
+{
+	string Text = ReadFileConvertToString("star5data.txt");
+	std::map<int, PrinterNumberData> Data;
+	string Space = R"(\n\n)";
+	int SpacePoint = RegexProcessFirstOccurance(Text, Space);
+	string FirstPartNumbers = Text.substr(0, SpacePoint + 1);
+	ConstructPrinterData(FirstPartNumbers, Data);
+	string SecondPartNumbers = Text.substr(SpacePoint + 2, Text.size());
+	std::pair<int, int> Answer = CalculateResults(SecondPartNumbers, Data);
 	return 0;
 }
