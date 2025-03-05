@@ -1646,7 +1646,7 @@ std::pair<int, int> CalculateResults(const string& InData, std::map<int, Printer
 }
 
 
-int main()
+int main123()
 {
 	string Text = ReadFileConvertToString("star5data.txt");
 	std::map<int, PrinterNumberData> Data;
@@ -1656,5 +1656,567 @@ int main()
 	ConstructPrinterData(FirstPartNumbers, Data);
 	string SecondPartNumbers = Text.substr(SpacePoint + 2, Text.size());
 	std::pair<int, int> Answer = CalculateResults(SecondPartNumbers, Data);
+	return 0;
+}
+
+
+
+
+
+
+/// advent of code #6
+
+enum MoveDirection
+{
+	Up,
+	Down,
+	Left,
+	Right
+};
+
+std::pair<int, int> ConvertRawToCoord(const std::pair<int, int>& InRoomSize, const int& RawIndex)
+{
+	// +1 is for \n
+	std::pair<int, int> GuardPoint = { RawIndex / (InRoomSize.second + 1),(RawIndex % (InRoomSize.first + 1)) };
+	return GuardPoint;
+}
+
+int ConvertCoordToRaw(const std::pair<int, int>& InRoomSize, const std::pair<int, int>& GuardCoord)
+{
+	// +1 is for \n
+	int RawPoint = GuardCoord.first * (InRoomSize.first + 1) + (GuardCoord.second);
+	return RawPoint;
+}
+
+struct ProcessorData
+{
+	bool CanMove;
+	int NextIndex;
+	MoveDirection CurrentDirection;
+};
+
+char RotateGuard(MoveDirection InDir)
+{
+	switch (InDir)
+	{
+	case MoveDirection::Up:
+		return '>';
+		break;
+	case MoveDirection::Left:
+		return '^';
+		break;
+	case MoveDirection::Right:
+		return 'v';
+		break;
+	case MoveDirection::Down:
+		return '<';
+		break;
+	default:
+		break;
+	}
+	return 'X';
+}
+
+MoveDirection GetMoveDir(char CurrentDir)
+{
+	MoveDirection MovingDirection = MoveDirection::Up;
+	switch (CurrentDir)
+	{
+	case '^':
+		MovingDirection = MoveDirection::Up;
+		break;
+	case '<':
+		MovingDirection = MoveDirection::Left;
+		break;
+	case '>':
+		MovingDirection = MoveDirection::Right;
+		break;
+	case 'v':
+		MovingDirection = MoveDirection::Down;
+		break;
+	default:
+		break;
+	}
+	return MovingDirection;
+}
+
+ProcessorData CanGuardMove(const int& GuardIndex, MoveDirection CurrentDir, const std::pair<int, int> GuardCoordOrignal, const string& MapText, const std::pair<int, int>& InRoomSize)
+{
+	std::pair<int, int> GuardCoord = GuardCoordOrignal;
+	ProcessorData Output;
+	MoveDirection MovingDirection = CurrentDir;// = MapText[GuardIndex] == '^' ? MoveDirection::Up : MoveDirection::Up;
+	switch (CurrentDir)
+	{
+	case MoveDirection::Up:
+		GuardCoord.first--;
+		break;
+	case MoveDirection::Left:
+		GuardCoord.second--;
+		break;
+	case MoveDirection::Right:
+		GuardCoord.second++;
+		break;
+	case MoveDirection::Down:
+		GuardCoord.first++;
+		break;
+	default:
+		break;
+	}
+	GuardCoord.first < InRoomSize.first&& GuardCoord.second < InRoomSize.second ? Output.CanMove = true : Output.CanMove = false;
+	GuardCoord.first >= 0 && GuardCoord.second >= 0 ? Output.CanMove : Output.CanMove = false;
+	if (!Output.CanMove) return Output;
+	Output.NextIndex = ConvertCoordToRaw(InRoomSize, GuardCoord);
+
+	if (MapText[Output.NextIndex] == '#')
+	{
+		char NewDir = RotateGuard(CurrentDir);
+		switch (NewDir)
+		{
+		case '^':
+			MovingDirection = MoveDirection::Up;
+			break;
+		case '<':
+			MovingDirection = MoveDirection::Left;
+			break;
+		case '>':
+			MovingDirection = MoveDirection::Right;
+			break;
+		case 'v':
+			MovingDirection = MoveDirection::Down;
+			break;
+		default:
+			break;
+		}
+		return CanGuardMove(GuardIndex, MovingDirection, GuardCoordOrignal, MapText, InRoomSize);
+	}
+	else
+	{
+		Output.CurrentDirection = MovingDirection;
+		// block / unvisited , visited
+		GuardCoord.first < InRoomSize.first&& GuardCoord.second < InRoomSize.second ? Output.CanMove = true : Output.CanMove = false;
+		return Output;
+	}
+}
+
+char GetGuardDir(MoveDirection InDir)
+{
+	switch (InDir)
+	{
+	case MoveDirection::Up:
+		return '^';
+		break;
+	case MoveDirection::Left:
+		return '<';
+		break;
+	case MoveDirection::Right:
+		return '>';
+		break;
+	case MoveDirection::Down:
+		return 'v';
+		break;
+	default:
+		break;
+	}
+	return 'X';
+}
+
+bool CheckForValidLoop(const string& InRoomData, const std::vector<std::pair<int, int>>& InNumbers)
+{
+	std::vector<MoveDirection> Dir;
+	for (int i = 0; i < InNumbers.size() - 1; i++)
+	{
+		if (InNumbers[i].first == InNumbers[i + 1].first)
+		{
+			Dir.push_back(MoveDirection::Right);
+			for (int j = InNumbers[i].second; j < InNumbers[i + 1].second; j++)
+			{
+				int RawIndex = ConvertCoordToRaw({ 10,10 }, { InNumbers[i].first,j });
+				if (InRoomData[RawIndex] == '#')
+				{
+					return false;
+				}
+			}
+		}
+		if (InNumbers[i].second == InNumbers[i + 1].second)
+		{
+			Dir.push_back(MoveDirection::Right);
+			for (int j = InNumbers[i].first; j < InNumbers[i + 1].first; j++)
+			{
+				int RawIndex = ConvertCoordToRaw({ 10,10 }, { j,InNumbers[i].second });
+				if (InRoomData[RawIndex] == '#')
+				{
+					return false;
+				}
+			}
+		}
+	}
+	Dir;
+}
+
+int ProcessTurnPoints(const std::vector<int>& InNumbers, const std::pair<int, int>& InRoomSize, const string& InRoomData)
+{
+	int Ways = 0;
+	std::vector<std::pair<int, int>> TurnPointCoordinates;
+	for (const auto& Number : InNumbers)
+	{
+		TurnPointCoordinates.push_back(ConvertRawToCoord(InRoomSize, Number));
+	}
+	std::vector<std::pair<int, int>> Loops;
+	for (int i = 0; i < InRoomSize.first; i++)
+	{
+		int PairCounter = 0;
+		for (int j = 0; j < InRoomSize.second; j++)
+		{
+
+		}
+	}
+	for (int i = 0; i < TurnPointCoordinates.size(); i++)
+	{
+		std::vector<std::pair<int, int>> TempShape = { TurnPointCoordinates[i] };
+
+		for (int j = i + 1; j < TurnPointCoordinates.size(); j++)
+		{
+			if (TurnPointCoordinates[j].first == TurnPointCoordinates[i].first || TurnPointCoordinates[j].second == TurnPointCoordinates[i].second)
+			{
+				TempShape.push_back(TurnPointCoordinates[j]);
+				for (int k = j + 1; k < TurnPointCoordinates.size(); k++)
+				{
+					if (TurnPointCoordinates[k].first <= TurnPointCoordinates[j].first)
+					{
+						continue;
+					}
+					if (TurnPointCoordinates[k].second == TurnPointCoordinates[j].second || TurnPointCoordinates[k].second == TurnPointCoordinates[i].second || TurnPointCoordinates[k].first == TurnPointCoordinates[j].first)
+					{
+						TempShape.push_back(TurnPointCoordinates[k]);
+						break;
+					}
+				}
+				if (TempShape.size() == 3)
+				{
+					if (CheckForValidLoop(InRoomData, TempShape)) // check path
+					{
+						Ways++;
+					}
+					TempShape.pop_back();
+					TempShape.pop_back();
+				}
+
+			}
+		}
+	}
+	return Ways;
+}
+
+bool CanGetStuckInLoop(string Text,int InGuardIndex,MoveDirection InDirection,const std::pair<int, int>& RoomSize)
+{
+	int OriginalPoint = InGuardIndex;
+	if (OriginalPoint == 13217) return false;
+	std::pair<int, int> GuardPoint = ConvertRawToCoord(RoomSize, InGuardIndex);
+
+	ProcessorData Processor = CanGuardMove(InGuardIndex, InDirection, GuardPoint, Text, RoomSize);
+	while (Processor.CanMove)
+	{
+		// mark previous location as already visited
+
+			Text[InGuardIndex] = 'X';
+			InGuardIndex = Processor.NextIndex;
+			GuardPoint = ConvertRawToCoord(RoomSize, InGuardIndex);
+			if (Processor.NextIndex == OriginalPoint)
+			{
+				return true;
+			}
+			Processor = CanGuardMove(InGuardIndex, Processor.CurrentDirection, GuardPoint, Text, RoomSize);
+			//std::cout << " Guard : " << GuardRawIndex << " Room Size : " << RoomSize.first << "," << RoomSize.second << std::endl;
+			//std::cout << " Guard coord  : " << GuardPoint.first << "," << GuardPoint.second << std::endl;
+			/*
+			system("CLS");
+			for (int i = 0; i < RoomSize.first; i++)
+			{
+				for (int j = 0; j < RoomSize.second; j++)
+				{
+					std::cout << Text[(i * (RoomSize.second + 1)) + j];
+				}
+				std::cout << std::endl;
+			}*/
+	}
+	return false;
+}
+
+
+int main()
+{
+	string Text = ReadFileConvertToString("star6data.txt");
+	std::istringstream iss(Text);
+	std::pair<int, int> RoomSize = { 0,0 };
+	string Line;
+	for (RoomSize.second = 0; std::getline(iss, Line); RoomSize.second++);
+	RoomSize.first = Line.size();
+	string Guard = R"(\^|<|>|v)";
+	int GuardRawIndex = RegexProcessFirstOccurance(Text, Guard);
+	std::cout << " Guard : " << GuardRawIndex << " Room Size : " << RoomSize.first << "," << RoomSize.second << std::endl;
+	std::pair<int, int> GuardPoint = ConvertRawToCoord(RoomSize, GuardRawIndex);
+	std::cout << " Guard coord  : " << GuardPoint.first << "," << GuardPoint.second << std::endl;
+	MoveDirection CurrentDir = GetMoveDir(Text[GuardRawIndex]);
+	ProcessorData Processor = CanGuardMove(GuardRawIndex, CurrentDir, GuardPoint, Text, RoomSize);
+	bool RunFirstPart = false;
+	int Part2 = 0;
+	while (Processor.CanMove)
+	{
+		// mark previous location as already visited
+
+		if (RunFirstPart)
+		{
+			Text[GuardRawIndex] = 'X';
+		}
+		else
+		{
+			if (Processor.CurrentDirection != CurrentDir) {
+				Text[GuardRawIndex] = 'O';
+				CurrentDir = Processor.CurrentDirection;
+			}
+			else
+			{
+				if (Text[GuardRawIndex] != 'O') {
+					switch (CurrentDir)
+					{
+					case Up:
+						if (Text[GuardRawIndex] == '-')
+							Text[GuardRawIndex] = '+';
+						else
+							Text[GuardRawIndex] = '|';
+						break;
+					case Down:
+						if (Text[GuardRawIndex] == '-')
+							Text[GuardRawIndex] = '+';
+						else
+							Text[GuardRawIndex] = '|';
+						break;
+					case Left:
+						if (Text[GuardRawIndex] == '|')
+							Text[GuardRawIndex] = '+';
+						else
+							Text[GuardRawIndex] = '-';
+						break;
+					case Right:
+						if (Text[GuardRawIndex] == '|')
+							Text[GuardRawIndex] = '+';
+						else
+							Text[GuardRawIndex] = '-';
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+		GuardRawIndex = Processor.NextIndex;
+		GuardPoint = ConvertRawToCoord(RoomSize, GuardRawIndex);
+		// move the guard
+		//Text[GuardRawIndex] = GetGuardDir(Processor.CurrentDirection);
+		int x = 0;
+		switch (Processor.CurrentDirection)
+		{
+		case MoveDirection::Up:
+			if (CanGetStuckInLoop(Text, GuardRawIndex, MoveDirection::Right, RoomSize))
+			{
+				Part2++;
+				break;
+			}
+			/*
+			for (int i = GuardPoint.second; i < RoomSize.second; i++)
+			{
+				if (x == 0)
+					if (Text[ConvertCoordToRaw(RoomSize, { GuardPoint.first,i })] == '#' || Text[ConvertCoordToRaw(RoomSize, { GuardPoint.first,i })] == 'O')
+					{
+						//break;
+					}
+				if (x == 0)
+					if (Text[ConvertCoordToRaw(RoomSize, { GuardPoint.first,i })] == '+' || Text[ConvertCoordToRaw(RoomSize, { GuardPoint.first,i })] == '-')
+					{
+						x = 1;
+					}
+				if (x == 1)
+				{
+					if (Text[ConvertCoordToRaw(RoomSize, { GuardPoint.first,i })] == 'O')
+					{
+						if (CanGetStuckInLoop(Text, GuardRawIndex, MoveDirection::Right,RoomSize))
+						{
+							Part2++;
+							break;
+						}
+					}
+				}
+			}*/
+			break;
+		case MoveDirection::Right:
+			if (CanGetStuckInLoop(Text, GuardRawIndex, MoveDirection::Down, RoomSize))
+			{
+				Part2++;
+				break;
+			}
+			/*
+			for (int i = GuardPoint.first; i < RoomSize.first; i++)
+			{
+				if (x == 0)
+					if (Text[ConvertCoordToRaw(RoomSize, { i,GuardPoint.second })] == '#')
+					{
+						//break;
+					}
+				if (x == 0)
+					if (Text[ConvertCoordToRaw(RoomSize, { i,GuardPoint.second })] == '+' || Text[ConvertCoordToRaw(RoomSize, { i,GuardPoint.second })] == '|')
+					{
+						x = 1;
+
+					}
+				if (x == 1)
+				{
+					if (Text[ConvertCoordToRaw(RoomSize, { i,GuardPoint.second })] == 'O')
+					{
+						if (CanGetStuckInLoop(Text, GuardRawIndex, MoveDirection::Down, RoomSize))
+						{
+							Part2++;
+							break;
+						}
+
+					}
+				}
+			}*/
+			break;
+		case MoveDirection::Down:
+			if (CanGetStuckInLoop(Text, GuardRawIndex, MoveDirection::Left, RoomSize))
+			{
+				Part2++;
+				break;
+			}
+			/*
+			for (int i = GuardPoint.second; i >= 0; i--)
+			{
+				if (x == 0)
+					if (Text[ConvertCoordToRaw(RoomSize, { GuardPoint.first, i })] == '#')
+					{
+						//	break;
+					}
+				if (x == 0)
+					if (Text[ConvertCoordToRaw(RoomSize, { GuardPoint.first, i })] == '+' || Text[ConvertCoordToRaw(RoomSize, { GuardPoint.first, i })] == '-')
+					{
+						x = 1;
+					}
+				if (x == 1)
+				{
+					if (Text[ConvertCoordToRaw(RoomSize, { GuardPoint.first, i })] == 'O')
+					{
+						if (CanGetStuckInLoop(Text, GuardRawIndex, MoveDirection::Left, RoomSize))
+						{
+							Part2++;
+							break;
+						}
+					}
+				}*/
+			
+			break;
+		case MoveDirection::Left:
+			if (CanGetStuckInLoop(Text, GuardRawIndex, MoveDirection::Up, RoomSize))
+			{
+				Part2++;
+				break;
+			}
+			/*
+			for (int i = GuardPoint.first; i >= 0; i--)
+			{
+				if (x == 0)
+					if (Text[ConvertCoordToRaw(RoomSize, { i,GuardPoint.second })] == '#')
+					{
+						//	break;
+					}
+				if (x == 0)
+					if (Text[ConvertCoordToRaw(RoomSize, { i,GuardPoint.second })] == '+' || Text[ConvertCoordToRaw(RoomSize, { i,GuardPoint.second })] == '|')
+					{
+						x = 1;
+					}
+				if (x == 1)
+				{
+					if (Text[ConvertCoordToRaw(RoomSize, { i,GuardPoint.second })] == 'O')
+					{
+						if (CanGetStuckInLoop(Text, GuardRawIndex, MoveDirection::Up, RoomSize))
+						{
+							Part2++;
+							break;
+						}
+					}
+				}
+			}*/
+			break;
+		default:
+			break;
+		}
+		Processor = CanGuardMove(GuardRawIndex, Processor.CurrentDirection, GuardPoint, Text, RoomSize);
+		//std::cout << " Guard : " << GuardRawIndex << " Room Size : " << RoomSize.first << "," << RoomSize.second << std::endl;
+		//std::cout << " Guard coord  : " << GuardPoint.first << "," << GuardPoint.second << std::endl;
+		/*
+		system("CLS");
+		for (int i = 0; i < RoomSize.first; i++)
+		{
+			for (int j = 0; j < RoomSize.second; j++)
+			{
+				std::cout << Text[(i * (RoomSize.second + 1)) + j];
+			}
+			std::cout << std::endl;
+		}*/
+	}
+	Part2;
+
+	std::cout << "part2" << Part2;
+	if (RunFirstPart)
+	{
+		Text[GuardRawIndex] = 'X';
+		int Moves = 0;
+		for (auto Iterator = Text.begin(); Iterator < Text.end(); Iterator++)
+		{
+			if (*Iterator == 'X') {
+				Moves++;
+			}
+		}
+		std::cout << Moves;
+	}
+	else
+	{
+
+		switch (CurrentDir)
+		{
+		case Up:
+			Text[GuardRawIndex] = '|';
+			break;
+		case Down:
+			Text[GuardRawIndex] = '|';
+			break;
+		case Left:
+			Text[GuardRawIndex] = '-';
+			break;
+		case Right:
+			Text[GuardRawIndex] = '-';
+			break;
+		default:
+			break;
+		}
+		system("CLS");
+		for (int i = 0; i < RoomSize.first; i++)
+		{
+			for (int j = 0; j < RoomSize.second; j++)
+			{
+				std::cout << Text[(i * (RoomSize.second + 1)) + j];
+			}
+			std::cout << std::endl;
+		}
+
+		string TurnPoints = R"(+)";
+		std::vector<int> AllTurnpoints = FindOccurances(Text, TurnPoints);
+		for (const auto& Point : AllTurnpoints)
+		{
+			std::cout << Point << std::endl;
+		}
+
+		std::cout << ProcessTurnPoints(AllTurnpoints, RoomSize, Text);
+	}
+
 	return 0;
 }
